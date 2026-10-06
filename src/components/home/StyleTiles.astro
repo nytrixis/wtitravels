@@ -1,0 +1,93 @@
+---
+import { Image } from 'astro:assets';
+import { collectionUrl, getCollection, toursIn } from '@/data/collections';
+import { coverOf, getTour } from '@/lib/tours';
+
+/** Hand-picked cover per style so each tile reads instantly. */
+const tiles = [
+  { slug: 'luxury-tours', tour: 'luxury-golden-triangle-tour-with-taj-hotels', blurb: 'Taj, Oberoi & ITC palaces' },
+  { slug: 'budget-tours', tour: 'golden-triangle-with-golden-temple-tour', blurb: 'Heritage & boutique stays' },
+  { slug: 'group-tours', tour: 'majestic-south-india-tour', blurb: 'Meet fellow travelers' },
+  { slug: 'short-tours', tour: '3-days-golden-triangle-tour', blurb: '2–5 day getaways' },
+].map((t) => {
+  const c = getCollection(t.slug);
+  return { ...t, label: c.label, count: toursIn(c).length, img: coverOf(getTour(t.tour)) };
+});
+---
+
+<ul role="list" class="styles" data-location="style_tiles">
+  {tiles.map((t) => (
+    <li data-reveal>
+      <a href={collectionUrl(t.slug)} class="tile" data-track="select_style" data-track-style={t.label}>
+        <Image src={t.img} alt="" width={600} height={420} widths={[400, 600, 900]} sizes="(min-width: 64rem) 18rem, 46vw" loading="lazy" />
+        <span class="tile__body">
+          <strong>{t.label}</strong>
+          <small>{t.blurb} · {t.count} tours</small>
+        </span>
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .styles {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+    margin: 0;
+  }
+  .tile {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-l);
+    overflow: hidden;
+    color: var(--white);
+    text-decoration: none;
+    isolation: isolate;
+  }
+  .tile :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+    transition: transform 0.9s var(--ease);
+  }
+  .tile::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, transparent 35%, rgb(7 28 18 / 0.85));
+  }
+  .tile:hover :global(img) {
+    transform: scale(1.06);
+  }
+  .tile__body {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: grid;
+    gap: 0.2rem;
+    padding: 1.25rem;
+  }
+  .tile strong {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 540;
+    line-height: 1;
+  }
+  .tile small {
+    font-size: 0.85rem;
+    opacity: 0.88;
+  }
+  @media (max-width: 62rem) {
+    .styles {
+      grid-template-columns: 1fr 1fr;
+    }
+    .tile {
+      aspect-ratio: 1;
+    }
+  }
+</style>

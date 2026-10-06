@@ -1,0 +1,165 @@
+---
+import CtaBand from '@/components/marketing/CtaBand.astro';
+import TourGrid from '@/components/tours/TourGrid.astro';
+import Icon from '@/components/ui/Icon.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import { destinations, destinationUrl, type Destination } from '@/data/destinations';
+import { destinationHeroes } from '@/lib/heroes';
+import { breadcrumbSchema, itemListSchema } from '@/lib/schema';
+import { tours, tourUrl } from '@/lib/tours';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+  return destinations.map((destination) => ({ params: { slug: destination.slug }, props: { destination } }));
+}
+
+const { destination } = Astro.props as { destination: Destination };
+const hero = destinationHeroes[destination.id];
+const all = tours.filter((t) => t.regions.includes(destination.id));
+const shown = all.slice(0, 9);
+const others = destinations.filter((d) => d.id !== destination.id);
+---
+
+<BaseLayout
+  title={`${destination.name} Tour Packages`}
+  description={destination.metaDescription}
+  image={hero.image}
+  schema={[
+    breadcrumbSchema([
+      { name: 'Home', href: '/' },
+      { name: 'Destinations', href: destinationUrl('india') },
+      { name: destination.name, href: destinationUrl(destination.slug) },
+    ]),
+    itemListSchema(`${destination.name} tours`, all.map((t) => ({ name: t.title, href: tourUrl(t.slug) }))),
+  ]}
+>
+  <PageHero
+    eyebrow={`Top attractions in ${destination.name}`}
+    title={destination.heading}
+    lede={destination.strapline}
+    crumbs={[{ name: 'Destinations' }, { name: destination.name }]}
+    image={hero.image}
+    focus={hero.focus}
+  />
+
+  <section class="section">
+    <div class="container about">
+      <div class="prose about__text">
+        {destination.paragraphs.map((p) => <p>{p}</p>)}
+      </div>
+      <aside class="facts">
+        <div>
+          <p class="facts__label"><Icon name="sun" size={18} /> Best season</p>
+          <p class="facts__value">{destination.bestSeason}</p>
+        </div>
+        <div>
+          <p class="facts__label"><Icon name="map-pin" size={18} /> Popular locations</p>
+          <ul role="list" class="facts__chips">
+            {destination.popular.map((p) => <li class="chip">{p}</li>)}
+          </ul>
+        </div>
+        <a href="/plan-your-trip/" class="btn btn--block" data-track="cta_click" data-track-location={`destination_${destination.slug}`} data-track-label="plan_my_trip">
+          Plan my {destination.name} trip
+        </a>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow">{all.length} tours</p>
+          <h2>{destination.name} tours &amp; packages</h2>
+        </div>
+        {all.length > shown.length && (
+          <a href={`/tours/?region=${destination.id}`} class="link-arrow">See all {all.length} {destination.name} tours</a>
+        )}
+      </div>
+      <TourGrid tours={shown} list={`destination_${destination.slug}`} />
+      {all.length > shown.length && (
+        <p class="more"><a class="btn btn--ghost" href={`/tours/?region=${destination.id}`}>See all {all.length} tours</a></p>
+      )}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Also explore</p>
+        <h2>Combine it with…</h2>
+      </div>
+      <ul role="list" class="chips">
+        {others.map((d) => <li><a class="chip chip--link" href={destinationUrl(d.slug)}>{d.name}</a></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand source={`destination-${destination.slug}`} interest="Tailor-made / not sure yet" heading={`Let’s plan your ${destination.name} journey`} />
+</BaseLayout>
+
+<style>
+  .about {
+    display: grid;
+    grid-template-columns: 1.4fr 0.8fr;
+    gap: var(--space-7);
+    align-items: start;
+  }
+  .about__text {
+    font-size: var(--step-1);
+    max-width: 60ch;
+  }
+  .facts {
+    display: grid;
+    gap: var(--space-5);
+    padding: var(--space-5);
+    background: var(--white);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-s);
+    position: sticky;
+    top: calc(var(--header-h) + 1rem);
+  }
+  .facts__label {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+  .facts__value {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+  }
+  .facts__chips,
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+  }
+  .more {
+    margin-top: var(--space-6);
+    text-align: center;
+  }
+  .chip--link {
+    min-height: 2.75rem;
+    transition: all 0.2s var(--ease);
+  }
+  .chip--link:hover {
+    background: var(--ink);
+    color: var(--white);
+    border-color: var(--ink);
+  }
+  @media (max-width: 62rem) {
+    .about {
+      grid-template-columns: 1fr;
+    }
+    .facts {
+      position: static;
+    }
+  }
+</style>

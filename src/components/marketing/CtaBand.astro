@@ -1,0 +1,141 @@
+---
+import { Image } from 'astro:assets';
+import EnquiryForm from '@/components/forms/EnquiryForm.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { site, whatsappLink } from '@/config/site';
+import palace from '@/assets/hero/palace-jali.jpg';
+
+interface Props {
+  source: string;
+  tourSlug?: string;
+  interest?: string;
+  heading?: string;
+  body?: string;
+}
+const {
+  source,
+  tourSlug,
+  interest,
+  heading = 'Let’s plan your journey',
+  body = `Share a few details and a trip planner will send your tailor-made proposal within ${site.claims.proposalHours} hours — transparent pricing, no hidden costs.`,
+} = Astro.props;
+---
+
+<section class="cta" data-location={`cta_band_${source}`}>
+  <div class="cta__bg" aria-hidden="true">
+    <Image src={palace} alt="" widths={[768, 1280, 1920]} sizes="100vw" loading="lazy" />
+  </div>
+  <div class="container cta__grid">
+    <div class="cta__copy" data-reveal>
+      <p class="eyebrow">Free, no obligation</p>
+      <h2>{heading}</h2>
+      <p>{body}</p>
+      <ul role="list" class="cta__points">
+        <li><Icon name="check" size={18} /> Proposal within {site.claims.proposalHours} hours</li>
+        <li><Icon name="check" size={18} /> Best price guaranteed — no hidden costs</li>
+        <li><Icon name="check" size={18} /> Tour manager on call {site.claims.support}</li>
+      </ul>
+      <div class="cta__direct">
+        <a class="btn btn--light" href={site.contact.phoneHref}><Icon name="phone" size={18} /> {site.contact.phone}</a>
+        {site.contact.whatsapp && (
+          <a class="btn btn--green" href={whatsappLink('Hi! I would like help planning a trip.')} target="_blank" rel="noopener">
+            <Icon name="whatsapp" size={18} /> WhatsApp
+          </a>
+        )}
+      </div>
+    </div>
+    <div class="cta__form" data-reveal style="--reveal-delay:120ms">
+      <h3>Get your free itinerary</h3>
+      <EnquiryForm {source} {tourSlug} {interest} variant="compact" idPrefix={`cta-${source}`} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta {
+    position: relative;
+    isolation: isolate;
+    color: var(--white);
+    padding-block: var(--space-8);
+    background: var(--forest);
+    overflow: clip;
+  }
+  .cta__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .cta__bg :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .cta__bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(95deg, rgb(7 28 18 / 0.92) 12%, rgb(7 28 18 / 0.66) 60%, rgb(7 28 18 / 0.45));
+  }
+  .cta__grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: var(--space-7);
+    align-items: center;
+  }
+  .cta__copy {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .cta__copy .eyebrow {
+    color: var(--orange);
+  }
+  .cta h2 {
+    font-size: var(--step-4);
+  }
+  .cta__copy > p:not(.eyebrow) {
+    font-size: var(--step-1);
+    color: rgb(255 255 255 / 0.85);
+    max-width: 46ch;
+  }
+  .cta__points {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+  }
+  .cta__points li {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+  }
+  .cta__points :global(svg) {
+    color: var(--orange);
+  }
+  .cta__direct {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+  .cta__form {
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: var(--radius-l);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-l);
+    display: grid;
+    gap: var(--space-4);
+  }
+  .cta__form h3 {
+    font-size: var(--step-2);
+  }
+  @media (max-width: 62rem) {
+    .cta__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 34rem) {
+    .cta__form {
+      padding: var(--space-5);
+    }
+  }
+</style>

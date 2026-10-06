@@ -1,0 +1,55 @@
+---
+/** Slow-drifting destination ticker. Second track is aria-hidden duplicate for a seamless loop. */
+const words = [
+  'Golden Triangle', 'Rajasthan', 'Kerala', 'Kashmir', 'Varanasi', 'Nepal', 'Bhutan', 'Sri Lanka',
+  'Shimla Manali', 'South India', 'Luxury Trains', 'Taj Mahal',
+];
+---
+
+<div class="marquee band" aria-label="Destinations we cover">
+  {[false, true].map((hidden) => (
+    <ul role="list" class="marquee__track" aria-hidden={hidden ? 'true' : undefined}>
+      {words.map((w, i) => (
+        <li class:list={[i % 2 && 'is-outline']}>{w}<span class="dot" aria-hidden="true"></span></li>
+      ))}
+    </ul>
+  ))}
+</div>
+
+<style>
+  .band {
+    background: var(--forest);
+    color: var(--paper);
+    padding-block: clamp(1.1rem, 2vw, 1.8rem);
+    --gap: 2.2rem;
+  }
+  .marquee__track {
+    margin: 0;
+    padding: 0;
+    --marquee-speed: 46s;
+  }
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 2.2rem;
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' 96;
+    font-weight: 700;
+    font-size: clamp(2rem, 1.2rem + 3.6vw, 4.2rem);
+    letter-spacing: -0.035em;
+    white-space: nowrap;
+    line-height: 1.1;
+  }
+  .is-outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--paper);
+  }
+  .dot {
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background: var(--orange);
+    flex: none;
+    -webkit-text-stroke: 0;
+  }
+</style>

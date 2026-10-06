@@ -1,0 +1,258 @@
+---
+import { Image } from 'astro:assets';
+import EnquiryForm from '@/components/forms/EnquiryForm.astro';
+import Faq from '@/components/marketing/Faq.astro';
+import TourGrid from '@/components/tours/TourGrid.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { site, whatsappLink } from '@/config/site';
+import { faqs, pillars } from '@/data/content';
+import { heroes } from '@/lib/heroes';
+import { getTour, pick } from '@/lib/tours';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+/**
+ * Ad landing page: one goal, no site navigation, the form above the fold.
+ * Kept out of the index so it can't compete with /collections/golden-triangle-tours/.
+ */
+const options = pick(['3-days-golden-triangle-tour', '4-days-golden-triangle-tour', 'luxury-golden-triangle-group-tour']);
+const days = getTour('3-days-golden-triangle-tour').itinerary;
+---
+
+<BaseLayout
+  title="Golden Triangle Tour — Delhi, Agra & Jaipur"
+  description="Private Golden Triangle tours with the Taj Mahal at sunrise. Free itinerary in 24 hours."
+  image={heroes.tajMahal}
+  noindex
+  focused
+  minimalHeader
+>
+  <section class="lp">
+    <div class="lp__bg" aria-hidden="true">
+      <Image src={heroes.tajMahal} alt="" widths={[768, 1280, 1920]} sizes="100vw" loading="eager" fetchpriority="high" style="object-position:50% 60%" />
+    </div>
+    <div class="container lp__grid">
+      <div class="lp__copy">
+        <p class="eyebrow">Delhi · Agra · Jaipur</p>
+        <h1>The Golden Triangle, planned around you</h1>
+        <p class="lp__lede">India’s most loved first journey — the Taj Mahal at sunrise, the forts of Jaipur and the grandeur of Delhi. Private, tailor-made, with a tour manager on call {site.claims.support}.</p>
+        <ul role="list" class="lp__points">
+          <li><Icon name="check" size={20} /> Tailor-made plan in {site.claims.proposalHours} hours</li>
+          <li><Icon name="check" size={20} /> Hotels from {site.claims.hotelRange} — you choose</li>
+          <li><Icon name="check" size={20} /> English-speaking guide &amp; private car</li>
+          <li><Icon name="check" size={20} /> Best price guaranteed — no hidden costs</li>
+        </ul>
+        <p class="lp__call">
+          Prefer to talk? <a href={site.contact.phoneHref} data-track-location="lp_golden_triangle"><Icon name="phone" size={18} /> {site.contact.phone}</a>
+          {site.contact.whatsapp && <a href={whatsappLink('Hi! I am interested in the Golden Triangle tour.')} target="_blank" rel="noopener" data-track-location="lp_golden_triangle"><Icon name="whatsapp" size={18} /> WhatsApp</a>}
+        </p>
+      </div>
+      <div class="lp__form" id="enquire">
+        <h2>Get your free Golden Triangle itinerary</h2>
+        <EnquiryForm source="lp-golden-triangle" interest="Golden Triangle (ad landing page)" lockInterest variant="compact" submitLabel="Send me my itinerary" idPrefix="lp" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Choose your pace</p>
+        <h2>Golden Triangle tours</h2>
+      </div>
+      <TourGrid tours={options} list="lp_golden_triangle" />
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">A taste of the route</p>
+        <h2>3 days, 3 great cities</h2>
+      </div>
+      <ol role="list" class="days">
+        {days.map((d) => (
+          <li><span class="days__label">{d.label}</span><strong>{d.title}</strong><p>{d.paragraphs[0]}</p></li>
+        ))}
+      </ol>
+      <p class="days__cta"><a class="btn btn--lg" href="#enquire" data-track="cta_click" data-track-location="lp_golden_triangle" data-track-label="get_itinerary">Get the full itinerary</a></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <ul role="list" class="why">
+        {pillars.slice(0, 4).map((p) => (
+          <li><Icon name={p.icon} size={24} /><h3>{p.title}</h3><p>{p.body}</p></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="container--narrow">
+      <div class="section-head"><h2>Good to know</h2></div>
+      <Faq items={faqs.slice(0, 5)} openFirst />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .lp {
+    position: relative;
+    isolation: isolate;
+    padding-block: var(--space-7) var(--space-8);
+    color: var(--white);
+  }
+  .lp__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .lp__bg :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .lp__bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(95deg, rgb(7 28 18 / 0.9) 20%, rgb(7 28 18 / 0.55));
+  }
+  .lp__grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: var(--space-7);
+    align-items: center;
+  }
+  .lp__copy {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .lp__copy .eyebrow {
+    color: var(--orange);
+  }
+  .lp h1 {
+    font-size: var(--step-5);
+    max-width: 14ch;
+  }
+  .lp__lede {
+    font-size: var(--step-1);
+    max-width: 46ch;
+    color: rgb(255 255 255 / 0.88);
+  }
+  .lp__points {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+    font-weight: 560;
+  }
+  .lp__points li {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+  }
+  .lp__points :global(svg) {
+    color: var(--orange);
+  }
+  .lp__call {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.2rem;
+    align-items: center;
+    font-size: 0.95rem;
+  }
+  .lp__call a {
+    display: inline-flex;
+    gap: 0.4rem;
+    align-items: center;
+    font-weight: 650;
+    color: var(--orange);
+  }
+  .lp__form {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-l);
+  }
+  .lp__form h2 {
+    font-size: var(--step-2);
+  }
+  .days {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
+    margin: 0;
+  }
+  .days li {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    padding: var(--space-5);
+    background: var(--white);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-s);
+  }
+  .days__label {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--step-2);
+    color: var(--accent);
+  }
+  .days p {
+    color: var(--ink-2);
+    font-size: 0.93rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .days__cta {
+    margin-top: var(--space-6);
+    text-align: center;
+  }
+  .why {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-5);
+    margin: 0;
+  }
+  .why li {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+  }
+  .why :global(svg) {
+    color: var(--accent);
+  }
+  .why h3 {
+    font-size: 1.15rem;
+  }
+  .why p {
+    color: var(--ink-2);
+    font-size: 0.92rem;
+  }
+  @media (max-width: 62rem) {
+    .lp__grid {
+      grid-template-columns: 1fr;
+    }
+    .days,
+    .why {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 40rem) {
+    .days,
+    .why {
+      grid-template-columns: 1fr;
+    }
+    .lp__form {
+      padding: var(--space-5);
+    }
+  }
+</style>

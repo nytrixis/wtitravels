@@ -1,0 +1,176 @@
+---
+import CtaBand from '@/components/marketing/CtaBand.astro';
+import Faq from '@/components/marketing/Faq.astro';
+import Reviews from '@/components/marketing/Reviews.astro';
+import DestinationList from '@/components/home/DestinationList.astro';
+import HomeHero from '@/components/home/HomeHero.astro';
+import JournalTeaser from '@/components/home/JournalTeaser.astro';
+import Marquee from '@/components/home/Marquee.astro';
+import Process from '@/components/home/Process.astro';
+import Stats from '@/components/home/Stats.astro';
+import StyleTiles from '@/components/home/StyleTiles.astro';
+import WhyUs from '@/components/home/WhyUs.astro';
+import TourGrid from '@/components/tours/TourGrid.astro';
+import { site } from '@/config/site';
+import { faqs } from '@/data/content';
+import { packageCollections, collectionUrl } from '@/data/collections';
+import { reviews } from '@/data/reviews';
+import { faqSchema } from '@/lib/schema';
+import { favouriteSlugs, pick, popularSlugs } from '@/lib/tours';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const popular = pick(popularSlugs);
+const favourites = pick(favouriteSlugs);
+---
+
+<BaseLayout
+  title="India Tour Packages & Private Tours | WTI Tours & Travels"
+  description="Tailor-made India, Nepal, Bhutan and Sri Lanka tours. Golden Triangle, Rajasthan, Kerala and more — hand-picked hotels, expert guides, 24x7 support. Free itinerary in 24 hours."
+  schema={[faqSchema(faqs)]}
+>
+  <HomeHero />
+  <Marquee />
+
+  <section class="section" id="popular">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow">Popular tours</p>
+          <h2 data-split>A unique way of meeting <em>your expectations</em></h2>
+        </div>
+        <a href="/tours/" class="link-arrow">See all tours</a>
+      </div>
+      <TourGrid tours={popular} list="home_popular" columns={4} rail />
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="container">
+      <Stats />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Destinations</p>
+        <h2 data-split>Four countries. One team that knows <em>them all</em>.</h2>
+      </div>
+      <DestinationList />
+    </div>
+  </section>
+
+  <section class="section section--tint grain">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Why {site.shortName}</p>
+        <h2 data-split>Well organised tours to <em>elevate</em> your spirit</h2>
+      </div>
+      <WhyUs />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow">Traveler favourites</p>
+          <h2 data-split>Our most <em>loved</em> tours of India</h2>
+        </div>
+        <a href="/tours/" class="link-arrow">Browse everything</a>
+      </div>
+      <TourGrid tours={favourites} list="home_favourites" columns={4} rail />
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Tours by style</p>
+        <h2 data-split>However you like to <em>travel</em></h2>
+      </div>
+      <StyleTiles />
+      <ul role="list" class="chips" aria-label="Holiday packages">
+        {packageCollections.map((c) => <li><a class="chip chip--link" href={collectionUrl(c.slug)}>{c.label}</a></li>)}
+      </ul>
+    </div>
+  </section>
+
+  {reviews.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">Traveler stories</p>
+          <h2 data-split>What our <em>customers</em> are saying</h2>
+        </div>
+        <Reviews />
+      </div>
+    </section>
+  )}
+
+  <section class="section section--ink on-dark">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">How it works</p>
+        <h2 data-split>From first idea to <em>boarding pass</em></h2>
+      </div>
+      <Process />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow">Journal</p>
+          <h2 data-split>Stories to <em>plan</em> by</h2>
+        </div>
+        <a href="/blog/" class="link-arrow">All stories</a>
+      </div>
+      <JournalTeaser />
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="container faq-wrap">
+      <div class="section-head">
+        <p class="eyebrow">Good to know</p>
+        <h2 data-split>Questions travelers <em>ask us</em></h2>
+        <p class="lede">Can’t find your answer? Message us — a real person replies fast.</p>
+      </div>
+      <Faq items={faqs} openFirst />
+    </div>
+  </section>
+
+  <CtaBand source="home" />
+</BaseLayout>
+
+<style>
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: var(--space-6) 0 0;
+  }
+  .chip--link {
+    min-height: 2.75rem;
+    transition: all 0.2s var(--ease);
+  }
+  .chip--link:hover {
+    background: var(--forest);
+    color: var(--white);
+    border-color: var(--forest);
+  }
+  .faq-wrap {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: var(--space-7);
+    align-items: start;
+  }
+  @media (max-width: 62rem) {
+    .faq-wrap {
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
+    }
+  }
+</style>

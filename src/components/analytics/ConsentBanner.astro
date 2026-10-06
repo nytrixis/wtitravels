@@ -1,0 +1,83 @@
+---
+import { site } from '@/config/site';
+---
+
+<aside class="consent" data-consent hidden aria-label="Cookie preferences">
+  <p>
+    We use cookies to understand how people use {site.shortName} and to improve our tours.
+    <a href="/privacy-policy/">Privacy policy</a>
+  </p>
+  <div class="consent__actions">
+    <button type="button" class="btn btn--ghost" data-consent-reject>Essential only</button>
+    <button type="button" class="btn" data-consent-accept>Accept</button>
+  </div>
+</aside>
+
+<style>
+  .consent {
+    position: fixed;
+    z-index: 120;
+    left: 1rem;
+    bottom: calc(var(--bar-h) + 0.75rem);
+    width: min(26rem, calc(100% - 2rem));
+    display: grid;
+    gap: 0.9rem;
+    padding: 1.1rem 1.2rem;
+    background: var(--forest);
+    color: rgb(255 255 255 / 0.9);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-l);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .consent[hidden] {
+    display: none;
+  }
+  .consent a {
+    color: var(--orange);
+  }
+  .consent__actions {
+    display: flex;
+    gap: 0.6rem;
+  }
+  .consent .btn {
+    min-height: 2.5rem;
+    padding: 0.4rem 1.1rem;
+    font-size: 0.9rem;
+    flex: 1;
+  }
+  .consent .btn--ghost {
+    --_fg: var(--white);
+    --_bd: rgb(255 255 255 / 0.35);
+  }
+  .consent .btn--ghost:hover {
+    --_bg: var(--white);
+    --_fg: var(--ink);
+  }
+  @media (min-width: 52.01rem) {
+    .consent {
+      bottom: 1rem;
+    }
+  }
+</style>
+
+<script>
+  import { needsDecision, setConsent, track } from '@/scripts/telemetry';
+
+  const banner = document.querySelector<HTMLElement>('[data-consent]');
+  const show = () => banner && (banner.hidden = false);
+  const hide = () => banner && (banner.hidden = true);
+
+  if (needsDecision()) show();
+
+  banner?.querySelector('[data-consent-accept]')?.addEventListener('click', () => {
+    setConsent({ analytics: true, marketing: true });
+    hide();
+    track('consent_update', { analytics: true, marketing: true });
+  });
+  banner?.querySelector('[data-consent-reject]')?.addEventListener('click', () => {
+    setConsent({ analytics: false, marketing: false });
+    hide();
+  });
+  document.querySelectorAll('[data-open-consent]').forEach((el) => el.addEventListener('click', show));
+</script>

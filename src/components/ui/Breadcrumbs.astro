@@ -1,0 +1,57 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  items: { name: string; href?: string }[];
+  /** Light text for dark hero backgrounds. */
+  tone?: 'dark' | 'light';
+}
+const { items, tone = 'dark' } = Astro.props;
+---
+
+<nav class:list={['crumbs', tone === 'light' && 'crumbs--light']} aria-label="Breadcrumb">
+  <ol role="list">
+    <li><a href="/">Home</a></li>
+    {items.map((item, i) => (
+      <li>
+        <Icon name="chevron-right" size={14} />
+        {item.href && i < items.length - 1 ? (
+          <a href={item.href}>{item.name}</a>
+        ) : (
+          <span aria-current="page">{item.name}</span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--ink-3);
+  }
+  .crumbs li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .crumbs a {
+    text-decoration: none;
+  }
+  .crumbs a:hover {
+    text-decoration: underline;
+  }
+  .crumbs [aria-current] {
+    color: var(--ink-2);
+    font-weight: 550;
+  }
+  .crumbs--light ol,
+  .crumbs--light [aria-current] {
+    color: rgb(255 255 255 / 0.8);
+  }
+</style>

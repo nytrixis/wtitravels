@@ -1,0 +1,73 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import { site, whatsappLink } from '@/config/site';
+
+interface Props {
+  quoteHref?: string;
+}
+const { quoteHref = '/plan-your-trip/' } = Astro.props;
+---
+
+<!-- Sticky conversion bar — mobile only. Three one-tap paths to a lead. -->
+<div class="bar" data-location="mobile_bar" role="region" aria-label="Quick contact">
+  <a href={site.contact.phoneHref} class="bar__btn" aria-label="Call us">
+    <Icon name="phone" size={20} /> <span>Call</span>
+  </a>
+  <a
+    href={whatsappLink('Hi! I would like help planning a trip to India.')}
+    class="bar__btn bar__btn--wa"
+    target="_blank"
+    rel="noopener"
+    aria-label="Chat on WhatsApp"
+  >
+    <Icon name="whatsapp" size={20} /> <span>WhatsApp</span>
+  </a>
+  <a href={quoteHref} class="bar__btn bar__btn--primary" data-track="cta_click" data-track-location="mobile_bar" data-track-label="plan_my_trip">
+    Get a free quote
+  </a>
+</div>
+
+<style>
+  .bar {
+    display: none;
+  }
+  @media (max-width: 52rem) {
+    .bar {
+      position: fixed;
+      inset: auto 0 0 0;
+      z-index: 90;
+      display: grid;
+      grid-template-columns: 1fr 1.15fr 1.7fr;
+      gap: 0.5rem;
+      height: var(--bar-h);
+      padding: 0.6rem var(--gutter) calc(0.6rem + env(safe-area-inset-bottom));
+      background: color-mix(in srgb, var(--paper) 94%, transparent);
+      backdrop-filter: blur(14px);
+      border-top: 1px solid var(--line);
+      box-sizing: content-box;
+    }
+  }
+  .bar__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--line-strong);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    color: var(--ink);
+    min-height: 2.75rem;
+  }
+  .bar__btn--wa {
+    background: var(--whatsapp);
+    border-color: var(--whatsapp);
+    color: var(--white);
+  }
+  .bar__btn--primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--white);
+  }
+</style>

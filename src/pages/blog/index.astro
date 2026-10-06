@@ -1,0 +1,90 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import CtaBand from '@/components/marketing/CtaBand.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import { heroes } from '@/lib/heroes';
+import { breadcrumbSchema } from '@/lib/schema';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+---
+
+<BaseLayout
+  title="Journal — India Travel Stories & Guides"
+  description="Guides and stories to plan your India trip: the Golden Triangle, Rajasthan, when to go and what to see."
+  image={heroes.hawaMahal}
+  schema={[breadcrumbSchema([{ name: 'Home', href: '/' }, { name: 'Journal', href: '/blog/' }])]}
+>
+  <PageHero eyebrow="Journal" title="Incredible India, in stories" lede="Holidays in India — guides, tips and inspiration from our trip planners." crumbs={[{ name: 'Journal' }]} image={heroes.hawaMahal} focus="50% 35%" />
+
+  <section class="section">
+    <div class="container">
+      <ul role="list" class="posts">
+        {posts.map((p) => (
+          <li data-reveal>
+            <a href={`/blog/${p.id}/`} class="post" data-track="select_content" data-track-content-type="blog" data-track-item-id={p.id}>
+              <span class="post__img">
+                <Image src={p.data.cover} alt={p.data.coverAlt} width={900} height={560} widths={[480, 720, 900]} sizes="(min-width: 48rem) 36rem, 92vw" />
+              </span>
+              <span class="post__meta">{p.data.category} · {fmt(p.data.pubDate)}</span>
+              <h2>{p.data.title}</h2>
+              <p>{p.data.description}</p>
+              <span class="link-arrow">Read the story</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+  <CtaBand source="blog-index" />
+</BaseLayout>
+
+<style>
+  .posts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-7) var(--space-6);
+    margin: 0;
+  }
+  .post {
+    display: grid;
+    gap: 0.75rem;
+    text-decoration: none;
+  }
+  .post__img {
+    display: block;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: var(--radius-l);
+  }
+  .post__img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.9s var(--ease);
+  }
+  .post:hover .post__img :global(img) {
+    transform: scale(1.05);
+  }
+  .post__meta {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .post h2 {
+    font-size: var(--step-3);
+  }
+  .post p {
+    color: var(--ink-2);
+    max-width: 52ch;
+  }
+  @media (max-width: 48rem) {
+    .posts {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

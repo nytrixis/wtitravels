@@ -1,0 +1,300 @@
+---
+import { getImage } from 'astro:assets';
+import CtaBand from '@/components/marketing/CtaBand.astro';
+import EnquiryCard from '@/components/tours/EnquiryCard.astro';
+import Itinerary from '@/components/tours/Itinerary.astro';
+import TourGallery from '@/components/tours/TourGallery.astro';
+import TourGrid from '@/components/tours/TourGrid.astro';
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro';
+import Icon from '@/components/ui/Icon.astro';
+import type { IconName } from '@/components/ui/icon-names';
+import { site } from '@/config/site';
+import { about } from '@/data/content';
+import { abs, breadcrumbSchema, tourSchema } from '@/lib/schema';
+import {
+  coverOf, nightsOf, relatedTours, routeOf, styleLabels, tours, tourUrl,
+  type Tour,
+} from '@/lib/tours';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+  return tours.map((tour) => ({ params: { slug: tour.slug }, props: { tour } }));
+}
+
+const { tour } = Astro.props as { tour: Tour };
+const url = abs(tourUrl(tour.slug));
+const og = await getImage({ src: coverOf(tour), width: 1200, height: 630, format: 'jpg' });
+const nights = nightsOf(tour);
+const related = relatedTours(tour, 3);
+const styleTags = tour.themes.filter((t) => styleLabels[t]).slice(0, 4);
+
+const facts = [
+  { icon: 'clock', label: 'Duration', value: nights ? `${tour.durationLabel} · ${nights} nights` : tour.durationLabel },
+  { icon: 'map-pin', label: 'Route', value: routeOf(tour) },
+  tour.groupSize && { icon: 'users', label: 'Group size', value: `${tour.groupSize.replace('-', '–')} travelers` },
+  tour.activityLevel && { icon: 'gauge', label: 'Activity level', value: `${tour.activityLevel}${tour.activityScore ? ` · ${tour.activityScore}` : ''}` },
+].filter(Boolean) as { icon: IconName; label: string; value: string }[];
+
+const title = tour.title;
+const description = tour.metaDescription || `${tour.summary} Tailor-made by ${site.name}.`;
+const hasInclusions = tour.inclusions.length > 0;
+---
+
+<BaseLayout
+  {title}
+  {description}
+  image={coverOf(tour)}
+  quoteHref="#enquire"
+  schema={[
+    tourSchema(tour, url, abs(og.src)),
+    breadcrumbSchema([
+      { name: 'Home', href: '/' },
+      { name: 'Tours', href: '/tours/' },
+      { name: tour.title, href: tourUrl(tour.slug) },
+    ]),
+  ]}
+>
+  <div class="container tour-top" data-track-view="view_tour" data-track-item-id={tour.slug} data-track-item-name={tour.title} data-track-duration={tour.durationLabel}>
+    <Breadcrumbs items={[{ name: 'Tours', href: '/tours/' }, { name: tour.title }]} />
+    <TourGallery {tour} />
+  </div>
+
+  <div class="container tour">
+    <div class="tour__main">
+      <header class="tour__head">
+        <p class="eyebrow">{routeOf(tour)}</p>
+        <h1>{tour.title}</h1>
+        <p class="lede">{tour.summary}</p>
+        <ul role="list" class="facts">
+          {facts.map((f) => (
+            <li>
+              <Icon name={f.icon} size={20} />
+              <span><small>{f.label}</small><strong>{f.value}</strong></span>
+            </li>
+          ))}
+        </ul>
+        {styleTags.length > 0 && (
+          <ul role="list" class="tags">
+            {styleTags.map((t) => <li class="chip">{styleLabels[t]}</li>)}
+          </ul>
+        )}
+      </header>
+
+      <section class="block" id="overview" aria-labelledby="overview-h">
+        <h2 id="overview-h">About this tour</h2>
+        <div class="prose">
+          {(tour.overview.length ? tour.overview : tour.intro).map((p) => <p>{p}</p>)}
+        </div>
+      </section>
+
+      <section class="block" id="itinerary" aria-labelledby="itinerary-h">
+        <h2 id="itinerary-h">Day-by-day itinerary</h2>
+        <Itinerary steps={tour.itinerary} tour={tour.title} />
+        <p class="note"><Icon name="info" size={16} /> Itineraries are samples intended to give you a general idea. We tailor every plan to your dates, pace and interests.</p>
+      </section>
+
+      {hasInclusions ? (
+        <section class="block" id="inclusions" aria-labelledby="inc-h">
+          <h2 id="inc-h">What’s included</h2>
+          <div class="inc">
+            <div>
+              <h3><Icon name="check" size={18} /> Included</h3>
+              <ul role="list">{tour.inclusions.map((i) => <li>{i}</li>)}</ul>
+            </div>
+            <div>
+              <h3><Icon name="x" size={18} /> Not included</h3>
+              <ul role="list">{tour.exclusions.map((i) => <li>{i}</li>)}</ul>
+            </div>
+          </div>
+          {tour.hotelNote.map((p) => <p class="note">{p}</p>)}
+        </section>
+      ) : (
+        <section class="block" id="how-we-travel" aria-labelledby="how-h">
+          <h2 id="how-h">How we travel</h2>
+          <ul role="list" class="how">
+            {about.serviceBullets.map((b) => <li><Icon name="check" size={18} />{b}</li>)}
+            <li><Icon name="check" size={18} /> A friendly tour manager on call {site.claims.support}</li>
+            <li><Icon name="check" size={18} /> Hotels, inclusions and pricing confirmed in your written proposal</li>
+          </ul>
+        </section>
+      )}
+    </div>
+
+    <div class="tour__side">
+      <EnquiryCard {tour} />
+    </div>
+  </div>
+
+  <section class="section section--tint">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">You may also like</p>
+        <h2>Similar journeys</h2>
+      </div>
+      <TourGrid tours={related} list="tour_related" />
+    </div>
+  </section>
+
+  <CtaBand source="tour-bottom" tourSlug={tour.slug} heading={`Ready for ${tour.title}?`} />
+</BaseLayout>
+
+<style>
+  .tour-top {
+    display: grid;
+    gap: var(--space-4);
+    padding-top: var(--space-5);
+  }
+  .tour {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 24rem;
+    gap: var(--space-7);
+    padding-block: var(--space-7) var(--space-8);
+    align-items: start;
+  }
+  .tour__main {
+    display: grid;
+    gap: var(--space-7);
+    min-width: 0;
+  }
+  .tour__side {
+    position: sticky;
+    top: calc(var(--header-h) + 1rem);
+  }
+  .tour__head {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .tour__head h1 {
+    font-size: var(--step-4);
+    max-width: 22ch;
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: var(--space-3);
+    margin: var(--space-2) 0 0;
+  }
+  .facts li {
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+    padding: 0.9rem 1rem;
+    background: var(--white);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-s);
+  }
+  .facts :global(svg) {
+    color: var(--accent);
+    flex: none;
+    margin-top: 0.15rem;
+  }
+  .facts small {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .facts strong {
+    font-weight: 650;
+    line-height: 1.3;
+  }
+  @media (max-width: 40rem) {
+    .facts {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2);
+    }
+    .facts li {
+      padding: 0.75rem;
+      gap: 0.5rem;
+    }
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+  }
+  .block {
+    display: grid;
+    gap: var(--space-5);
+    scroll-margin-top: calc(var(--header-h) + 1rem);
+  }
+  .block h2 {
+    font-size: var(--step-3);
+  }
+  .note {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    font-size: 0.88rem;
+    color: var(--ink-3);
+  }
+  .note :global(svg) {
+    flex: none;
+    margin-top: 0.2rem;
+  }
+  .how {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+  }
+  .how li {
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+  }
+  .how :global(svg) {
+    color: var(--green);
+    flex: none;
+    margin-top: 0.25rem;
+  }
+  .inc {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-5);
+  }
+  .inc h3 {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: var(--step-1);
+    margin-bottom: var(--space-3);
+  }
+  .inc ul {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+    color: var(--ink-2);
+  }
+  .inc li {
+    padding-left: 1rem;
+    position: relative;
+  }
+  .inc li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.7em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  @media (max-width: 64rem) {
+    .tour {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+    .tour__side {
+      position: static;
+      order: 2;
+    }
+  }
+  @media (max-width: 40rem) {
+    .inc {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

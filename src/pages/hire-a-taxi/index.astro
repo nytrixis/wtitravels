@@ -1,0 +1,123 @@
+---
+import CtaBand from '@/components/marketing/CtaBand.astro';
+import Icon from '@/components/ui/Icon.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import { taxiPages, taxiPromise, taxiUrl } from '@/data/taxi';
+import { heroes } from '@/lib/heroes';
+import { formatInr } from '@/lib/money';
+import { breadcrumbSchema } from '@/lib/schema';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const cheapest = (slug: string) =>
+  Math.min(...taxiPages.find((t) => t.slug === slug)!.packages.flatMap((p) => p.prices.map((x) => x.inr)));
+---
+
+<BaseLayout
+  title="Hire a Taxi in India — Golden Triangle & Rajasthan by Car"
+  description="Hire a car with an English-speaking driver for the Golden Triangle or Rajasthan. Sedan, Innova or Tempo Traveller at fixed fares, with medical kits and European-standard safety."
+  image={heroes.delhi}
+  schema={[breadcrumbSchema([{ name: 'Home', href: '/' }, { name: 'Hire a taxi', href: '/hire-a-taxi/' }])]}
+>
+  <PageHero
+    eyebrow="Hire a taxi"
+    title="Hire a taxi in India at a cheaper price"
+    lede={taxiPromise}
+    crumbs={[{ name: 'Hire a taxi' }]}
+    image={heroes.delhi}
+    focus="50% 60%"
+  />
+
+  <section class="section">
+    <div class="container">
+      <ul role="list" class="assure">
+        <li><Icon name="car" size={24} /><strong>All car types</strong><span>Sedan, Toyota Innova and Tempo Traveller</span></li>
+        <li><Icon name="users" size={24} /><strong>English-speaking drivers</strong><span>And other local languages</span></li>
+        <li><Icon name="shield" size={24} /><strong>Safety first</strong><span>Medical kit in every car · European-standard norms</span></li>
+      </ul>
+
+      <div class="routes">
+        {taxiPages.map((t) => (
+          <a href={taxiUrl(t.slug)} class="route" data-track="select_content" data-track-content-type="taxi" data-track-item-id={t.slug}>
+            <span class="route__eyebrow">{t.packages.length} packages</span>
+            <h2>{t.name} by car</h2>
+            <p>{t.packages.map((p) => p.title.replace(' by Car', '')).join(' · ')}</p>
+            <span class="route__price">from <strong>{formatInr(cheapest(t.slug))}</strong></span>
+            <span class="link-arrow">See fares &amp; book</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand source="taxi-index" interest="Taxi / car hire" heading="Need a custom route?" body="Tell us your cities and dates — we’ll quote a fixed fare for any route across India." />
+</BaseLayout>
+
+<style>
+  .assure {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+    margin: 0 0 var(--space-7);
+  }
+  .assure li {
+    display: grid;
+    gap: 0.4rem;
+    padding: var(--space-5);
+    background: var(--white);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-s);
+  }
+  .assure :global(svg) {
+    color: var(--accent);
+  }
+  .assure span {
+    color: var(--ink-2);
+    font-size: 0.92rem;
+  }
+  .routes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-5);
+  }
+  .route {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background: var(--forest);
+    color: var(--white);
+    border-radius: var(--radius-l);
+    text-decoration: none;
+    transition: transform 0.3s var(--ease);
+  }
+  .route:hover {
+    transform: translateY(-4px);
+  }
+  .route__eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--orange);
+  }
+  .route h2 {
+    font-size: var(--step-3);
+  }
+  .route p {
+    color: rgb(255 255 255 / 0.75);
+  }
+  .route__price strong {
+    font-family: var(--font-display);
+    font-size: var(--step-4);
+    font-weight: 560;
+    color: var(--orange);
+  }
+  .route .link-arrow {
+    color: var(--white);
+  }
+  @media (max-width: 52rem) {
+    .assure,
+    .routes {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,71 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+---
+
+<ul role="list" class="journal" data-location="journal_teaser">
+  {posts.map((p) => (
+    <li data-reveal>
+      <a href={`/blog/${p.id}/`} class="post" data-track="select_content" data-track-content-type="blog" data-track-item-id={p.id}>
+        <span class="post__img">
+          <Image src={p.data.cover} alt={p.data.coverAlt} width={800} height={520} widths={[400, 640, 800]} sizes="(min-width: 48rem) 36rem, 92vw" loading="lazy" />
+        </span>
+        <span class="post__meta">{p.data.category} · {fmt(p.data.pubDate)}</span>
+        <h3>{p.data.title}</h3>
+        <p>{p.data.description}</p>
+        <span class="link-arrow">Read the story</span>
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .journal {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+    margin: 0;
+  }
+  .post {
+    display: grid;
+    gap: 0.75rem;
+    text-decoration: none;
+  }
+  .post__img {
+    display: block;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: var(--radius-l);
+  }
+  .post__img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.9s var(--ease);
+  }
+  .post:hover .post__img :global(img) {
+    transform: scale(1.05);
+  }
+  .post__meta {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .post h3 {
+    font-size: var(--step-3);
+  }
+  .post p {
+    color: var(--ink-2);
+    max-width: 52ch;
+  }
+  @media (max-width: 48rem) {
+    .journal {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

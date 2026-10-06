@@ -1,0 +1,56 @@
+---
+import TourGrid from '@/components/tours/TourGrid.astro';
+import { pick, popularSlugs } from '@/lib/tours';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const picks = pick(popularSlugs.slice(0, 3));
+---
+
+<BaseLayout title="Page not found" description="That page has wandered off the itinerary." noindex>
+  <section class="nf">
+    <div class="container--narrow nf__copy">
+      <p class="nf__code" aria-hidden="true">404</p>
+      <h1>This page has wandered off the itinerary.</h1>
+      <p class="lede">Let’s get you back on the road — browse our tours or tell us where you’d like to go.</p>
+      <div class="nf__actions">
+        <a class="btn btn--lg" href="/tours/">Browse all tours</a>
+        <a class="btn btn--ghost btn--lg" href="/plan-your-trip/">Plan my trip</a>
+      </div>
+    </div>
+    <div class="container">
+      <TourGrid tours={picks} list="404" />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    padding-block: var(--space-8);
+    display: grid;
+    gap: var(--space-8);
+  }
+  .nf__copy {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: center;
+    text-align: center;
+  }
+  .nf__code {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(5rem, 14vw, 10rem);
+    line-height: 0.9;
+    color: var(--accent);
+  }
+  .nf h1 {
+    font-size: var(--step-4);
+  }
+  .nf__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: center;
+  }
+</style>

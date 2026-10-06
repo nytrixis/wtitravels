@@ -1,0 +1,214 @@
+/* Shared form primitives used by every lead form. */
+.field {
+  display: grid;
+  gap: 0.4rem;
+  align-content: start;
+}
+.field__label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.field__label small {
+  font-weight: 450;
+  color: var(--ink-3);
+}
+.field__control {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.7rem 0.95rem;
+  background: var(--white);
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-s);
+  transition:
+    border-color 0.15s var(--ease),
+    box-shadow 0.15s var(--ease);
+  appearance: none;
+}
+select.field__control {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2315172a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  padding-right: 2.5rem;
+}
+textarea.field__control {
+  min-height: 6.5rem;
+  resize: vertical;
+}
+.field__control::placeholder {
+  color: var(--ink-3);
+  opacity: 0.8;
+}
+.field__control:hover {
+  border-color: var(--ink-3);
+}
+.field__control:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgb(184 71 8 / 0.16);
+}
+.field__hint {
+  font-size: 0.8rem;
+  color: var(--ink-3);
+}
+.field__error {
+  min-height: 0;
+  font-size: 0.82rem;
+  font-weight: 550;
+  color: var(--danger);
+}
+.field.is-invalid .field__control {
+  border-color: var(--danger);
+}
+.field.is-invalid .field__control:focus {
+  box-shadow: 0 0 0 4px rgb(179 38 30 / 0.15);
+}
+
+/* Chip radio group */
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.choice {
+  position: relative;
+}
+.choice input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  cursor: pointer;
+}
+.choice span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.5rem 1rem;
+  background: var(--white);
+  border: 1.5px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 550;
+  transition: all 0.15s var(--ease);
+}
+.choice input:checked + span {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--white);
+}
+.choice input:focus-visible + span {
+  outline: 3px solid var(--orange);
+  outline-offset: 2px;
+}
+
+/* Number stepper */
+.stepper {
+  display: grid;
+  grid-template-columns: 3rem 1fr 3rem;
+  align-items: center;
+  background: var(--white);
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+}
+.stepper button {
+  height: 3rem;
+  border: 0;
+  background: transparent;
+  display: grid;
+  place-items: center;
+}
+.stepper button:hover {
+  background: var(--paper-2);
+}
+.stepper input {
+  width: 100%;
+  border: 0;
+  text-align: center;
+  background: transparent;
+  font-weight: 650;
+  font-size: 1.05rem;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.stepper input::-webkit-outer-spin-button,
+.stepper input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.stepper input:focus {
+  outline: none;
+}
+
+/* Progress bar */
+.form-progress {
+  display: grid;
+  gap: 0.5rem;
+}
+.form-progress__label {
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.form-progress__bar {
+  --progress: 50%;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--paper-3);
+  overflow: hidden;
+}
+.form-progress__bar::after {
+  content: '';
+  display: block;
+  height: 100%;
+  width: var(--progress);
+  background: var(--accent);
+  transition: width 0.4s var(--ease);
+}
+
+.form-failure {
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius-s);
+  background: #fdecea;
+  border: 1px solid #f5c6c2;
+  color: #7a1913;
+  display: grid;
+  gap: 0.7rem;
+  font-size: 0.92rem;
+}
+.form-failure[hidden] {
+  display: none;
+}
+.form-failure__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.is-loading {
+  position: relative;
+  color: transparent !important;
+}
+.is-loading::after {
+  content: '';
+  position: absolute;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 2px solid rgb(255 255 255 / 0.45);
+  border-top-color: var(--white);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}
+.hp {
+  position: absolute !important;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

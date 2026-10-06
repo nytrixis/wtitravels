@@ -1,0 +1,238 @@
+---
+import { Image } from 'astro:assets';
+import CtaBand from '@/components/marketing/CtaBand.astro';
+import Icon from '@/components/ui/Icon.astro';
+import TrustBadges from '@/components/ui/TrustBadges.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import { site } from '@/config/site';
+import { about, pillars } from '@/data/content';
+import { heroes } from '@/lib/heroes';
+import { breadcrumbSchema } from '@/lib/schema';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="About Us"
+  description={`${site.name} is a New Delhi travel company crafting tailor-made individual and group tours across India, Nepal, Bhutan and Sri Lanka. Meet the team and how we travel.`}
+  image={heroes.udaipur}
+  schema={[breadcrumbSchema([{ name: 'Home', href: '/' }, { name: 'About us', href: '/about/' }])]}
+>
+  <PageHero eyebrow="About us" title="The most detailed and modern tour theme" lede={about.strapline} crumbs={[{ name: 'About us' }]} image={heroes.udaipur} focus="50% 55%" />
+
+  <section class="section">
+    <div class="container story">
+      <div class="story__text">
+        <p class="eyebrow">About {site.shortName}</p>
+        <h2>Travel company, headquartered in New Delhi</h2>
+        <div class="prose">
+          {about.company.map((p) => <p>{p}</p>)}
+          <h3>Services offered</h3>
+          {about.services.map((p) => <p>{p}</p>)}
+          <ul role="list" class="checks">
+            {about.serviceBullets.map((b) => <li><Icon name="check" size={18} />{b}</li>)}
+          </ul>
+        </div>
+        <TrustBadges variant="full" />
+      </div>
+      <div class="story__art arch" data-reveal>
+        <Image src={heroes.portrait} alt="A Rajasthani guide in an orange turban in a palace window" width={720} height={900} widths={[400, 640, 900]} sizes="(min-width: 64rem) 28rem, 90vw" style="object-position:50% 40%" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">What we stand for</p>
+        <h2>Travel &amp; tourism, done thoughtfully</h2>
+      </div>
+      <ul role="list" class="values">
+        {about.values.map((v, i) => (
+          <li data-reveal style={`--reveal-delay:${i * 80}ms`}>
+            <h3>{v.title}</h3>
+            <p>{v.body}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container two">
+      <div>
+        <p class="eyebrow">Indian tourism</p>
+        <h2>India — the best travel destination</h2>
+        <div class="prose">{about.india.map((p) => <p>{p}</p>)}</div>
+      </div>
+      <div>
+        <p class="eyebrow">People power</p>
+        <h2>Our guides are the secret weapon behind our success</h2>
+        <div class="prose"><p>{about.people}</p></div>
+        <ul role="list" class="meters" aria-label="Areas of expertise">
+          {about.expertise.map((e) => (
+            <li>
+              <div class="meters__row"><span>{e.label}</span><span>{e.value}%</span></div>
+              <div class="meters__bar" role="img" aria-label={`${e.label}: ${e.value}%`}><span style={`width:${e.value}%`}></span></div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ink">
+    <div class="container two">
+      <div>
+        <p class="eyebrow">Ecotourism</p>
+        <h2>Low-impact travel that gives back</h2>
+      </div>
+      <p class="eco">{about.ecoTourism}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Why travelers choose us</p>
+        <h2>Amazing support for all</h2>
+      </div>
+      <ul role="list" class="pillars">
+        {pillars.map((p) => (
+          <li><Icon name={p.icon} size={22} /><div><h3>{p.title}</h3><p>{p.body}</p></div></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand source="about" />
+</BaseLayout>
+
+<style>
+  .story {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: var(--space-8);
+    align-items: center;
+  }
+  .story__text {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .story__art {
+    aspect-ratio: 4 / 5;
+    max-width: 28rem;
+  }
+  .story__art :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .checks {
+    display: grid;
+    gap: 0.6rem;
+    padding: 0;
+    margin: 0;
+  }
+  .checks li {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+  }
+  .checks :global(svg) {
+    color: var(--green);
+    margin-top: 0.3rem;
+    flex: none;
+  }
+  .values {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
+    margin: 0;
+  }
+  .values li {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    padding: var(--space-5);
+    background: var(--white);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-s);
+  }
+  .values p {
+    color: var(--ink-2);
+    font-size: 0.95rem;
+  }
+  .two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
+    align-items: start;
+  }
+  .two > div {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .meters {
+    display: grid;
+    gap: var(--space-4);
+    margin: var(--space-3) 0 0;
+  }
+  .meters__row {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 650;
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+  }
+  .meters__bar {
+    height: 6px;
+    border-radius: 6px;
+    background: var(--paper-3);
+    overflow: hidden;
+  }
+  .meters__bar span {
+    display: block;
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--accent), var(--orange));
+  }
+  .eco {
+    font-size: var(--step-1);
+    color: rgb(255 255 255 / 0.85);
+    max-width: 56ch;
+  }
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
+    margin: 0;
+  }
+  .pillars li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-3);
+  }
+  .pillars :global(svg) {
+    color: var(--accent);
+    margin-top: 0.2rem;
+  }
+  .pillars h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0.3rem;
+  }
+  .pillars p {
+    color: var(--ink-2);
+    font-size: 0.93rem;
+  }
+  @media (max-width: 62rem) {
+    .story,
+    .two {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+    .values,
+    .pillars {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

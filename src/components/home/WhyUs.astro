@@ -1,0 +1,117 @@
+---
+import { Image } from 'astro:assets';
+import Icon from '@/components/ui/Icon.astro';
+import { pillars } from '@/data/content';
+import portrait from '@/assets/hero/rajasthan-portrait.jpg';
+---
+
+<div class="why">
+  <div class="why__art" data-reveal>
+    <div class="why__arch arch">
+      <Image src={portrait} alt="A Rajasthani guide in an orange turban looks out from a palace window in Jodhpur" width={720} height={900} widths={[400, 640, 900]} sizes="(min-width: 64rem) 30rem, 90vw" loading="lazy" style="object-position:50% 40%" />
+    </div>
+    <p class="why__badge"><strong>24x7</strong><span>tour manager on call</span></p>
+  </div>
+  <ul role="list" class="why__list">
+    {pillars.map((p, i) => (
+      <li class="why__item" data-reveal style={`--reveal-delay:${i * 60}ms`}>
+        <span class="why__icon"><Icon name={p.icon} size={22} /></span>
+        <div>
+          <h3>{p.title}</h3>
+          <p>{p.body}</p>
+        </div>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .why {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: var(--space-8);
+    align-items: center;
+  }
+  .why__art {
+    position: relative;
+    max-width: 30rem;
+  }
+  .why__arch {
+    aspect-ratio: 4 / 5;
+  }
+  .why__arch :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .why__badge {
+    position: absolute;
+    right: -1.25rem;
+    bottom: 2.5rem;
+    display: grid;
+    gap: 0.1rem;
+    padding: 1rem 1.3rem;
+    background: var(--orange);
+    color: var(--ink);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-m);
+    line-height: 1.1;
+  }
+  .why__badge strong {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    font-weight: 600;
+  }
+  .why__badge span {
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+  .why__list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6) var(--space-6);
+    margin: 0;
+  }
+  .why__item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-4);
+    align-items: start;
+  }
+  .why__icon {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+  }
+  .why__item h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.4rem;
+  }
+  .why__item p {
+    color: var(--ink-2);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  @media (max-width: 64rem) {
+    .why {
+      grid-template-columns: 1fr;
+      gap: var(--space-7);
+    }
+    .why__art {
+      max-width: 24rem;
+      margin-inline: auto;
+    }
+    .why__badge {
+      right: 0;
+    }
+  }
+  @media (max-width: 40rem) {
+    .why__list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

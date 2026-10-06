@@ -1,0 +1,140 @@
+---
+import EnquiryForm from '@/components/forms/EnquiryForm.astro';
+import Icon from '@/components/ui/Icon.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import { site, telHref } from '@/config/site';
+import { heroes } from '@/lib/heroes';
+import { breadcrumbSchema } from '@/lib/schema';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const numbers = [
+  { label: 'Mobile', value: site.contact.phone, href: site.contact.phoneHref },
+  { label: site.contact.person || 'Contact person', value: site.contact.personPhone, href: telHref(site.contact.personPhone) },
+];
+---
+
+<BaseLayout
+  title="Contact Us"
+  description={`Contact ${site.name} by phone, WhatsApp, email or the enquiry form. Get a tailor-made itinerary and quote within ${site.claims.proposalHours} hours.`}
+  image={heroes.jodhpur}
+  schema={[breadcrumbSchema([{ name: 'Home', href: '/' }, { name: 'Contact', href: '/contact/' }])]}
+>
+  <PageHero
+    eyebrow="Contact us"
+    title="Get in touch"
+    lede="Contact us by email, phone or through our web form below. We reply within 24 hours — usually much sooner."
+    crumbs={[{ name: 'Contact' }]}
+    image={heroes.jodhpur}
+    focus="50% 40%"
+  />
+
+  <section class="section">
+    <div class="container layout">
+      <div class="info">
+        <h2>Talk to us</h2>
+        <div class="card">
+          <a class="line" href={`mailto:${site.contact.email}`} data-track-location="contact_page">
+            <span class="ico"><Icon name="mail" size={20} /></span>
+            <span><small>Email</small><strong>{site.contact.email}</strong></span>
+          </a>
+          {numbers.map((n) => (
+            <a class="line" href={n.href} data-track-location="contact_page">
+              <span class="ico"><Icon name="phone" size={20} /></span>
+              <span><small>{n.label}</small><strong>{n.value}</strong></span>
+            </a>
+          ))}
+        </div>
+        <div class="card">
+          <div class="line">
+            <span class="ico"><Icon name="map-pin" size={20} /></span>
+            <span><small>Address</small><strong>{site.contact.address}</strong></span>
+          </div>
+          <div class="line">
+            <span class="ico"><Icon name="clock" size={20} /></span>
+            <span><small>Working hours</small><strong>{site.contact.hours}</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form" id="enquire">
+        <h2>Send an enquiry</h2>
+        <EnquiryForm source="contact" idPrefix="contact" />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .layout {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: var(--space-8);
+    align-items: start;
+  }
+  .info,
+  .form {
+    display: grid;
+    gap: var(--space-5);
+  }
+  .card {
+    display: grid;
+    background: var(--white);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-s);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .line {
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+    padding: 1rem 1.3rem;
+    text-decoration: none;
+    transition: background 0.2s var(--ease);
+  }
+  .line + .line {
+    border-top: 1px solid var(--line);
+  }
+  a.line:hover {
+    background: var(--paper-2);
+  }
+  .ico {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+  }
+  .line small {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .line strong {
+    font-weight: 650;
+    overflow-wrap: anywhere;
+    line-height: 1.4;
+  }
+  .form {
+    padding: var(--space-6);
+    background: var(--white);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-m);
+    border: 1px solid var(--line);
+  }
+  @media (max-width: 62rem) {
+    .layout {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+    .form {
+      padding: var(--space-5);
+    }
+  }
+</style>

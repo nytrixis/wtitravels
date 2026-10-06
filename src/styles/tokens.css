@@ -1,0 +1,67 @@
+/* Design tokens — the only place colours, type and spacing are defined.
+   Palette is taken from the WTI mark: saffron-orange, flag-green, white. */
+:root {
+  /* Colour */
+  --ink: #0b1f15; /* text */
+  --ink-2: #33473b;
+  --ink-3: #5a6e61;
+  --forest: #0c3a25; /* dark surfaces */
+  --forest-2: #12503a;
+  --paper: #f5f7f1; /* page */
+  --paper-2: #e8efe3; /* tinted sections */
+  --paper-3: #d6e1d0;
+  --white: #ffffff;
+  --orange: #ff7a1a; /* logo orange — decoration, and text on dark */
+  --accent: #b84708; /* orange for text/buttons on light — ≥4.9:1 */
+  --accent-deep: #8f3504;
+  --accent-soft: #ffe6d2;
+  --green: #0f6b2f; /* green for text on light */
+  --green-bright: #138808; /* logo green — decoration */
+  --green-soft: #dcefd8;
+  --whatsapp: #187241;
+  --line: rgb(11 31 21 / 0.12);
+  --line-strong: rgb(11 31 21 / 0.24);
+  --overlay: rgb(7 28 18 / 0.55);
+  --danger: #b3261e;
+
+  /* Type */
+  --font-display: 'Bricolage Grotesque Variable', 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  --font-body: 'Instrument Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --step--1: clamp(0.8rem, 0.78rem + 0.1vw, 0.875rem);
+  --step-0: clamp(1rem, 0.97rem + 0.15vw, 1.0625rem);
+  --step-1: clamp(1.15rem, 1.08rem + 0.35vw, 1.3rem);
+  --step-2: clamp(1.4rem, 1.25rem + 0.75vw, 1.75rem);
+  --step-3: clamp(1.8rem, 1.45rem + 1.6vw, 2.6rem);
+  --step-4: clamp(2.3rem, 1.6rem + 3vw, 4rem);
+  --step-5: clamp(2.8rem, 1.6rem + 5.2vw, 6rem);
+
+  /* Space */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: clamp(3.5rem, 2.5rem + 5vw, 7rem);
+  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2rem);
+  --container: 76rem;
+  --container-narrow: 48rem;
+
+  /* Shape & depth */
+  --radius-s: 0.5rem;
+  --radius-m: 0.9rem;
+  --radius-l: 1.5rem;
+  --arch: 999px 999px 0.9rem 0.9rem;
+  --shadow-s: 0 1px 2px rgb(11 31 21 / 0.06), 0 2px 8px rgb(11 31 21 / 0.05);
+  --shadow-m: 0 8px 28px rgb(11 31 21 / 0.1);
+  --shadow-l: 0 24px 64px rgb(11 31 21 / 0.2);
+
+  /* Motion */
+  --ease: cubic-bezier(0.22, 0.8, 0.28, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --header-h: 4.5rem;
+  --bar-h: 4.25rem; /* mobile sticky CTA bar */
+}

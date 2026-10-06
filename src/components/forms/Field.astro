@@ -1,0 +1,73 @@
+---
+interface Option {
+  value: string;
+  label: string;
+}
+interface Group {
+  label: string;
+  options: Option[];
+}
+interface Props {
+  name: string;
+  label: string;
+  type?: 'text' | 'email' | 'tel' | 'date' | 'select' | 'textarea' | 'number';
+  required?: boolean;
+  placeholder?: string;
+  autocomplete?: string;
+  inputmode?: 'text' | 'tel' | 'email' | 'numeric';
+  hint?: string;
+  optional?: boolean;
+  value?: string;
+  options?: Option[];
+  groups?: Group[];
+  list?: string;
+  min?: string;
+  rows?: number;
+  class?: string;
+  /** Prefix keeps ids unique when a page holds several forms. */
+  idPrefix?: string;
+}
+const {
+  name, label, type = 'text', required = false, placeholder, autocomplete, inputmode, hint,
+  optional = false, value = '', options, groups, list, min, rows = 4, class: className, idPrefix = 'f',
+} = Astro.props;
+const id = `${idPrefix}-${name}`;
+const describedBy = [hint ? `${id}-hint` : '', `${id}-err`].filter(Boolean).join(' ');
+---
+
+<div class:list={['field', className]}>
+  <label class="field__label" for={id}>
+    {label}{optional && <small> (optional)</small>}
+  </label>
+
+  {type === 'select' ? (
+    <select class="field__control" id={id} name={name} required={required} aria-describedby={describedBy}>
+      {options?.map((o) => <option value={o.value} selected={o.value === value}>{o.label}</option>)}
+      {groups?.map((g) => (
+        <optgroup label={g.label}>
+          {g.options.map((o) => <option value={o.value} selected={o.value === value}>{o.label}</option>)}
+        </optgroup>
+      ))}
+    </select>
+  ) : type === 'textarea' ? (
+    <textarea class="field__control" id={id} name={name} rows={rows} required={required} placeholder={placeholder} aria-describedby={describedBy}>{value}</textarea>
+  ) : (
+    <input
+      class="field__control"
+      id={id}
+      name={name}
+      type={type}
+      required={required}
+      placeholder={placeholder}
+      autocomplete={autocomplete}
+      inputmode={inputmode}
+      list={list}
+      min={min}
+      value={value || undefined}
+      aria-describedby={describedBy}
+    />
+  )}
+
+  {hint && <span class="field__hint" id={`${id}-hint`}>{hint}</span>}
+  <span class="field__error" id={`${id}-err`} role="alert"></span>
+</div>

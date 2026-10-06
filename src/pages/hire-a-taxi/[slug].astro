@@ -1,0 +1,233 @@
+---
+import CtaBand from '@/components/marketing/CtaBand.astro';
+import Field from '@/components/forms/Field.astro';
+import Icon from '@/components/ui/Icon.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import { site } from '@/config/site';
+import { formatInr } from '@/lib/money';
+import { taxiPages, taxiPromise, taxiUrl, type TaxiPage } from '@/data/taxi';
+import { heroes } from '@/lib/heroes';
+import { breadcrumbSchema } from '@/lib/schema';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+  return taxiPages.map((page) => ({ params: { slug: page.slug }, props: { page } }));
+}
+
+const { page } = Astro.props as { page: TaxiPage };
+const hero = page.slug === 'rajasthan-tour' ? heroes.jaisalmer : heroes.tajMahal;
+const today = new Date().toISOString().slice(0, 10);
+const packageOptions = page.packages.map((p) => ({ value: p.title, label: p.title }));
+const vehicleOptions = ['Sedan car (2 pax)', 'Toyota Innova (3 to 4 pax)', 'Tempo Traveller (5 to 8 pax)'].map((v) => ({ value: v, label: v }));
+---
+
+<BaseLayout
+  title={page.heading}
+  description={page.metaDescription}
+  image={hero}
+  quoteHref="#book"
+  schema={[
+    breadcrumbSchema([
+      { name: 'Home', href: '/' },
+      { name: 'Hire a taxi', href: '/hire-a-taxi/' },
+      { name: page.name, href: taxiUrl(page.slug) },
+    ]),
+  ]}
+>
+  <PageHero
+    eyebrow="Hire a taxi"
+    title={page.heading}
+    lede={taxiPromise}
+    crumbs={[{ name: 'Hire a taxi', href: '/hire-a-taxi/' }, { name: page.name }]}
+    image={hero}
+    focus="50% 55%"
+  />
+
+  <section class="section">
+    <div class="container layout">
+      <div class="packs">
+        <div class="section-head">
+          <p class="eyebrow">Fixed fares per vehicle</p>
+          <h2>{page.name} by car</h2>
+        </div>
+        {page.packages.map((p) => (
+          <article class="pack" data-location={`taxi_${page.slug}`}>
+            <header>
+              <h3>{p.title}</h3>
+              <p class="pack__route"><Icon name="route" size={16} /> {p.route}</p>
+            </header>
+            <ul role="list" class="pack__prices">
+              {p.prices.map((v) => (
+                <li>
+                  <span class="pack__vehicle"><Icon name="car" size={18} /> {v.vehicle}<small>{v.pax}</small></span>
+                  <strong>{formatInr(v.inr)}</strong>
+                </li>
+              ))}
+            </ul>
+            <a
+              href="#book"
+              class="btn btn--ghost btn--block"
+              data-pick-package={p.title}
+              data-track="cta_click"
+              data-track-location={`taxi_${page.slug}`}
+              data-track-label="book_taxi"
+              data-track-item-name={p.title}>Book this taxi</a
+            >
+          </article>
+        ))}
+        <p class="fine"><Icon name="info" size={16} /> Fares are in Indian rupees per vehicle, inclusive of driver, fuel and taxes as per your proposal. Monument entry fees are extra.</p>
+      </div>
+
+      <aside class="book" id="book" aria-labelledby="book-h">
+        <h2 id="book-h">Book taxi services</h2>
+        <form data-lead-form data-source={`taxi-${page.slug}`} novalidate class="book__form">
+          <input type="text" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <div class="book__grid">
+            <Field idPrefix="taxi" class="span-2" name="package" label="Tour" type="select" required options={[{ value: '', label: 'Select a package…' }, ...packageOptions]} />
+            <Field idPrefix="taxi" class="span-2" name="vehicle" label="Vehicle" type="select" required options={[{ value: '', label: 'Select a vehicle…' }, ...vehicleOptions]} />
+            <Field idPrefix="taxi" class="span-2" name="name" label="Your name" required autocomplete="name" />
+            <Field idPrefix="taxi" name="country" label="Country" autocomplete="country-name" optional />
+            <Field idPrefix="taxi" name="phone" label="Mobile" type="tel" required autocomplete="tel" inputmode="tel" placeholder="+91 00000 00000" />
+            <Field idPrefix="taxi" class="span-2" name="email" label="Email" type="email" required autocomplete="email" inputmode="email" />
+            <Field idPrefix="taxi" name="arrival" label="Arrival date" type="date" min={today} required />
+            <Field idPrefix="taxi" name="departure" label="Departure date" type="date" min={today} optional />
+            <Field idPrefix="taxi" name="passengers" label="No. of persons" type="number" optional />
+            <Field idPrefix="taxi" class="span-2" name="message" label="Requirement details" type="textarea" rows={3} optional />
+          </div>
+          <button type="submit" class="btn btn--lg btn--block">Request taxi booking</button>
+          <div class="form-failure" data-failure hidden role="alert">
+            <strong>We couldn’t send that just now.</strong>
+            <span>Reach us instantly instead:</span>
+            <div class="form-failure__actions">
+              {site.contact.whatsapp && <a class="btn btn--green" data-fallback-whatsapp href="#" target="_blank" rel="noopener"><Icon name="whatsapp" size={18} /> WhatsApp us</a>}
+              <a class="btn btn--ghost" data-fallback-email href="#"><Icon name="mail" size={18} /> Email us</a>
+            </div>
+          </div>
+        </form>
+      </aside>
+    </div>
+  </section>
+
+  <CtaBand source={`taxi-${page.slug}`} interest="Taxi / car hire" heading="Prefer a guided tour with hotels?" body="We can combine a car and driver with hand-picked hotels and guides — a complete tour, one price." />
+</BaseLayout>
+
+<style>
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    gap: var(--space-7);
+    align-items: start;
+  }
+  .packs {
+    display: grid;
+    gap: var(--space-5);
+  }
+  .packs .section-head {
+    margin-bottom: 0;
+  }
+  .pack {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    background: var(--white);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-s);
+  }
+  .pack h3 {
+    font-size: var(--step-2);
+  }
+  .pack__route {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--ink-3);
+  }
+  .pack__prices {
+    display: grid;
+    margin: 0;
+    border-block: 1px solid var(--line);
+  }
+  .pack__prices li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 0;
+  }
+  .pack__prices li + li {
+    border-top: 1px dashed var(--line-strong);
+  }
+  .pack__vehicle {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 600;
+  }
+  .pack__vehicle small {
+    color: var(--ink-3);
+    font-weight: 450;
+  }
+  .pack__vehicle :global(svg) {
+    color: var(--accent);
+  }
+  .pack__prices strong {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 560;
+  }
+  .fine {
+    display: flex;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    color: var(--ink-3);
+  }
+  .fine :global(svg) {
+    flex: none;
+    margin-top: 0.2rem;
+  }
+  .book {
+    position: sticky;
+    top: calc(var(--header-h) + 1rem);
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-m);
+  }
+  .book h2 {
+    font-size: var(--step-2);
+  }
+  .book__form {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .book__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+  .book__grid :global(.span-2) {
+    grid-column: 1 / -1;
+  }
+  @media (max-width: 62rem) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+    .book {
+      position: static;
+    }
+  }
+</style>
+
+<script>
+  // "Book this taxi" preselects that package in the form.
+  document.querySelectorAll<HTMLElement>('[data-pick-package]').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      const select = document.querySelector<HTMLSelectElement>('#book select[name="package"]');
+      if (select) select.value = btn.dataset.pickPackage ?? '';
+    }),
+  );
+</script>

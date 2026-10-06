@@ -1,0 +1,91 @@
+---
+import type { ImageMetadata } from 'astro';
+import ConsentBanner from '@/components/analytics/ConsentBanner.astro';
+import BackToTop from '@/components/layout/BackToTop.astro';
+import FloatingWhatsApp from '@/components/layout/FloatingWhatsApp.astro';
+import Footer from '@/components/layout/Footer.astro';
+import Header from '@/components/layout/Header.astro';
+import MobileBar from '@/components/layout/MobileBar.astro';
+import LeadPopup from '@/components/marketing/LeadPopup.astro';
+import SEO from '@/components/seo/SEO.astro';
+import { hasPlaceholderContact, site } from '@/config/site';
+import { organizationSchema, websiteSchema } from '@/lib/schema';
+import '@/styles/global.css';
+import displayLatin from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2?url';
+import instrumentLatin from '@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2?url';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: ImageMetadata;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  schema?: Record<string, unknown>[];
+  published?: Date;
+  headerVariant?: 'solid' | 'overlay';
+  /** Conversion pages hide the sticky bar and pop-up to keep focus on the form. */
+  focused?: boolean;
+  /** Strips navigation from the header (landing pages). */
+  minimalHeader?: boolean;
+  path?: string;
+  /** Where the mobile bar's primary button points — defaults to the planner. */
+  quoteHref?: string;
+}
+
+const {
+  title, description, image, type, noindex, schema = [], published,
+  headerVariant = 'solid', focused = false, minimalHeader = false, path, quoteHref,
+} = Astro.props;
+
+const clientConfig = {
+  siteName: site.name,
+  siteUrl: site.url,
+  whatsapp: site.contact.whatsapp,
+  email: site.contact.email,
+  formEndpoint: site.forms.endpoint,
+  formAccessKey: site.forms.accessKey,
+  consentMode: import.meta.env.PUBLIC_CONSENT_MODE === 'strict' ? 'strict' : 'auto',
+  tracking: site.tracking,
+};
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f7f1" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="preload" href={displayLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={instrumentLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${site.name} Journal`} href="/rss.xml" />
+    <meta name="generator" content={Astro.generator} />
+    <SEO {title} {description} {image} {type} {noindex} {published} {path} schema={[organizationSchema(), websiteSchema(), ...schema]} />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script is:inline type="application/json" id="wti-config" set:html={JSON.stringify(clientConfig)} />
+  </head>
+  <body>
+    {import.meta.env.DEV && hasPlaceholderContact && (
+      <p style="position:fixed;z-index:999;left:0;right:0;bottom:0;margin:0;padding:.4rem 1rem;background:#fff3cd;color:#664d03;font:600 12px/1.4 system-ui;text-align:center">
+        Dev only: placeholder contact details in use — set PUBLIC_PHONE / PUBLIC_EMAIL / PUBLIC_WHATSAPP in .env
+      </p>
+    )}
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header variant={headerVariant} minimal={minimalHeader} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    {!focused && <MobileBar {quoteHref} />}
+    {!focused && <FloatingWhatsApp />}
+    <BackToTop />
+    {!focused && <LeadPopup />}
+    <ConsentBanner />
+    <script>
+      import '@/scripts/main';
+    </script>
+  </body>
+</html>

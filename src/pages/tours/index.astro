@@ -1,0 +1,108 @@
+---
+import CtaBand from '@/components/marketing/CtaBand.astro';
+import TourCard from '@/components/tours/TourCard.astro';
+import TourFilters from '@/components/tours/TourFilters.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import { itemListSchema, breadcrumbSchema } from '@/lib/schema';
+import { favouriteSlugs, popularSlugs, tours, tourUrl, styleLabels } from '@/lib/tours';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import hero from '@/assets/hero/hawa-mahal.jpg';
+
+// Curated tours lead; the rest follow by length so the default view still feels edited.
+const lead = [...popularSlugs, ...favouriteSlugs];
+const ordered = [
+  ...lead.map((s) => tours.find((t) => t.slug === s)!),
+  ...tours.filter((t) => !lead.includes(t.slug as never)).sort((a, b) => (a.durationDays ?? 1) - (b.durationDays ?? 1)),
+];
+
+const themeOrder = ['luxury', 'budget', 'group', 'short', 'honeymoon', 'heritage', 'culture', 'temples', 'wildlife', 'beach', 'wellness'];
+const styles = themeOrder.filter((t) => tours.some((x) => x.themes.includes(t)) && styleLabels[t]);
+---
+
+<BaseLayout
+  title="All India, Nepal, Bhutan & Sri Lanka Tours"
+  description={`Browse ${tours.length} tailor-made tours of India, Nepal, Bhutan and Sri Lanka — Golden Triangle, Rajasthan, Kerala, South India, Kashmir and more. Filter by length and style, then get a free quote.`}
+  schema={[
+    breadcrumbSchema([{ name: 'Home', href: '/' }, { name: 'Tours', href: '/tours/' }]),
+    itemListSchema('All tours', ordered.map((t) => ({ name: t.title, href: tourUrl(t.slug) }))),
+  ]}
+>
+  <PageHero
+    eyebrow="All tours"
+    title="Find the journey that fits you"
+    lede="Contact our tour experts for a price quote, bookings and itinerary suggestions — every tour can be tailored."
+    crumbs={[{ name: 'Tours' }]}
+    image={hero}
+    focus="50% 35%"
+  />
+
+  <section class="section tours">
+    <div class="container">
+      <h2 class="sr-only">Tours</h2>
+      <TourFilters total={tours.length} styles={styles} />
+      <ul role="list" class="grid" data-location="tours_index">
+        {ordered.map((tour, i) => (
+          <li><TourCard {tour} list="tours_index" index={i} filterable priority={i < 3} /></li>
+        ))}
+      </ul>
+      <div class="empty" data-filter-empty hidden>
+        <h2>No tours match that — yet.</h2>
+        <p>Every journey here can be reshaped, and we build bespoke trips daily. Tell us what you have in mind.</p>
+        <div class="empty__actions">
+          <a href="/plan-your-trip/" class="btn" data-track="cta_click" data-track-location="tours_empty" data-track-label="plan_my_trip">Plan a custom trip</a>
+          <button type="button" class="btn btn--ghost" data-filter-empty-reset>Clear filters</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand source="tours-index" heading="Can’t see the perfect tour?" body="Most of our travelers customise. Tell us your dates and interests and we’ll shape an itinerary just for you." />
+</BaseLayout>
+
+<style>
+  .tours {
+    padding-top: var(--space-6);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
+    margin: 0;
+  }
+  .grid > li[hidden] {
+    display: none;
+  }
+  .empty {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: center;
+    text-align: center;
+    padding: var(--space-8) var(--space-4);
+  }
+  .empty[hidden] {
+    display: none;
+  }
+  .empty h2 {
+    font-size: var(--step-3);
+  }
+  .empty p {
+    max-width: 44ch;
+    color: var(--ink-2);
+  }
+  .empty__actions {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  @media (max-width: 62rem) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 40rem) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

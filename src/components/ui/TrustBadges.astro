@@ -1,0 +1,74 @@
+---
+import { Image } from 'astro:assets';
+import mot from '@/assets/brand/mot-approved.png';
+import iato from '@/assets/brand/iato.png';
+
+interface Props {
+  /** "row" = compact logos only; "full" = logos with captions. */
+  variant?: 'row' | 'full';
+}
+const { variant = 'row' } = Astro.props;
+---
+
+<ul role="list" class:list={['badges', `badges--${variant}`]}>
+  <li class="badge">
+    <span class="badge__logo badge__logo--mot">
+      <Image src={mot} alt="Incredible India — approved by Ministry of Tourism, Government of India" height={72} widths={[150, 300]} sizes="150px" loading="lazy" />
+    </span>
+    {variant === 'full' && <span class="badge__cap">Recognised by the Ministry of Tourism, Government of India</span>}
+  </li>
+  <li class="badge">
+    <span class="badge__logo badge__logo--iato">
+      <Image src={iato} alt="IATO — Indian Association of Tour Operators, member" height={88} widths={[120, 195]} sizes="100px" loading="lazy" />
+    </span>
+    {variant === 'full' && <span class="badge__cap">Member of the Indian Association of Tour Operators (IATO)</span>}
+  </li>
+</ul>
+
+<style>
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.75rem;
+    margin: 0;
+  }
+  .badge {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+  .badge__logo {
+    display: grid;
+    place-items: center;
+    padding: 0.5rem 0.8rem;
+    background: var(--white);
+    border-radius: 0.8rem;
+    box-shadow: 0 1px 0 rgb(11 31 21 / 0.06), 0 6px 18px rgb(11 31 21 / 0.08);
+  }
+  .badge__logo :global(img) {
+    height: 2.6rem;
+    width: auto !important;
+    max-width: none !important;
+    object-fit: contain;
+  }
+  .badge__logo--iato :global(img) {
+    height: 3.1rem;
+  }
+  .badge__cap {
+    max-width: 16rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: var(--ink-2);
+    font-weight: 560;
+  }
+  .badges--full {
+    gap: var(--space-5) var(--space-6);
+  }
+  .badges--full .badge__logo :global(img) {
+    height: 3.4rem;
+  }
+  .badges--full .badge__logo--iato :global(img) {
+    height: 4rem;
+  }
+</style>

@@ -1,0 +1,56 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import { whatsappLink } from '@/config/site';
+---
+
+<a
+  href={whatsappLink('Hi! I would like help planning a trip to India.')}
+  class="wa"
+  target="_blank"
+  rel="noopener"
+  aria-label="Chat with us on WhatsApp"
+  data-track-location="floating_whatsapp"
+>
+  <Icon name="whatsapp" size={28} />
+  <span class="wa__label">Chat with a trip planner</span>
+</a>
+
+<style>
+  .wa {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    z-index: 80;
+    display: none;
+    align-items: center;
+    gap: 0.6rem;
+    height: 3.5rem;
+    padding: 0 1.1rem;
+    border-radius: 999px;
+    background: var(--whatsapp);
+    color: var(--white);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.92rem;
+    box-shadow: var(--shadow-m);
+    transition: transform 0.2s var(--ease);
+  }
+  .wa:hover {
+    transform: translateY(-2px);
+  }
+  .wa__label {
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width 0.35s var(--ease);
+  }
+  .wa:hover .wa__label,
+  .wa:focus-visible .wa__label {
+    max-width: 14rem;
+  }
+  @media (min-width: 52.01rem) {
+    .wa {
+      display: inline-flex;
+    }
+  }
+</style>

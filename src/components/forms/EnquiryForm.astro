@@ -1,0 +1,244 @@
+---
+import Field from './Field.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { site } from '@/config/site';
+import { regionLabels, tours, type RegionId } from '@/lib/tours';
+
+interface Props {
+  /** Where the form lives — becomes the `source` on every lead for funnel reporting. */
+  source: string;
+  /** Tour slug to preselect. */
+  tourSlug?: string;
+  /** Free-text interest (collection / destination) when no tour is chosen. */
+  interest?: string;
+  variant?: 'full' | 'compact';
+  /** Hide the destination picker and submit `interest` as-is (ad landing pages). */
+  lockInterest?: boolean;
+  submitLabel?: string;
+  idPrefix?: string;
+}
+
+const { source, tourSlug, interest = '', variant = 'full', lockInterest = false, submitLabel, idPrefix = source } = Astro.props;
+
+const tourTitle = tours.find((t) => t.slug === tourSlug)?.title;
+const today = new Date().toISOString().slice(0, 10);
+
+const regionOrder: RegionId[] = ['india', 'nepal', 'bhutan', 'sri-lanka'];
+const groups = regionOrder
+  .map((r) => ({
+    label: regionLabels[r],
+    options: tours
+      .filter((t) => t.regions[t.regions.length - 1] === r)
+      .map((t) => ({ value: t.title, label: `${t.title} (${t.durationLabel})` })),
+  }))
+  .filter((g) => g.options.length);
+
+const interestOptions = [
+  { value: '', label: 'Choose a tour or tell us later…' },
+  { value: 'Tailor-made / not sure yet', label: 'Tailor-made trip — help me decide' },
+];
+
+const months = Array.from({ length: 12 }, (_, i) => {
+  const d = new Date();
+  d.setMonth(d.getMonth() + i, 1);
+  const label = d.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+  return { value: label, label };
+});
+
+const hotels = ['3 Star', '4 Star', '5 Star', 'Luxury', 'Heritage', 'Not sure'];
+const countries = [
+  'United States', 'United Kingdom', 'Australia', 'Canada', 'Germany', 'France', 'Italy', 'Spain',
+  'Netherlands', 'Switzerland', 'Ireland', 'New Zealand', 'Singapore', 'United Arab Emirates',
+  'South Africa', 'India', 'Other',
+];
+const label = submitLabel ?? 'Get my free itinerary';
+---
+
+<form
+  class:list={['lead', `lead--${variant}`]}
+  data-lead-form
+  data-source={source}
+  data-tour={tourTitle ?? ''}
+  novalidate
+  method="post"
+  action="/thank-you/"
+>
+  <input type="text" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+  {variant === 'full' ? (
+    <>
+      <div class="form-progress">
+        <span class="form-progress__label" data-progress-label>Step 1 of 2</span>
+        <div class="form-progress__bar" data-progress></div>
+      </div>
+
+      <fieldset class="lead__step" data-step>
+        <legend class="sr-only">Your trip</legend>
+        <p class="lead__title">Tell us about your trip</p>
+        <div class="lead__grid">
+          <Field
+            idPrefix={idPrefix}
+            class="span-2"
+            name="interest"
+            label="Tour or destination"
+            type="select"
+            value={tourTitle ?? interest}
+            options={interestOptions}
+            groups={groups}
+          />
+          <Field idPrefix={idPrefix} name="arrival" label="Arrival date" type="date" min={today} optional />
+          <Field idPrefix={idPrefix} name="departure" label="Departure date" type="date" min={today} optional />
+
+          <div class="field span-2">
+            <span class="field__label" id={`${idPrefix}-hotel-l`}>Hotels <small>(optional)</small></span>
+            <div class="choices" role="radiogroup" aria-labelledby={`${idPrefix}-hotel-l`}>
+              {hotels.map((h) => (
+                <label class="choice"><input type="radio" name="hotel" value={h} /><span>{h}</span></label>
+              ))}
+            </div>
+          </div>
+
+          <div class="lead__counts span-2">
+            <div class="field">
+              <label class="field__label" for={`${idPrefix}-adults`}>Adults</label>
+              <div class="stepper" data-stepper>
+                <button type="button" data-dec aria-label="Fewer adults"><Icon name="minus" size={16} /></button>
+                <input id={`${idPrefix}-adults`} name="adults" type="number" value="2" min="1" max="30" inputmode="numeric" />
+                <button type="button" data-inc aria-label="More adults"><Icon name="plus" size={16} /></button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label" for={`${idPrefix}-children`}>Children</label>
+              <div class="stepper" data-stepper>
+                <button type="button" data-dec aria-label="Fewer children"><Icon name="minus" size={16} /></button>
+                <input id={`${idPrefix}-children`} name="children" type="number" value="0" min="0" max="30" inputmode="numeric" />
+                <button type="button" data-inc aria-label="More children"><Icon name="plus" size={16} /></button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label" for={`${idPrefix}-infants`}>Infants</label>
+              <div class="stepper" data-stepper>
+                <button type="button" data-dec aria-label="Fewer infants"><Icon name="minus" size={16} /></button>
+                <input id={`${idPrefix}-infants`} name="infants" type="number" value="0" min="0" max="30" inputmode="numeric" />
+                <button type="button" data-inc aria-label="More infants"><Icon name="plus" size={16} /></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="lead__actions">
+          <button type="button" class="btn btn--lg btn--block" data-next>Continue <Icon name="arrow-right" size={18} /></button>
+        </div>
+      </fieldset>
+
+      <fieldset class="lead__step" data-step hidden>
+        <legend class="sr-only">Your details</legend>
+        <p class="lead__title">Where should we send your plan?</p>
+        <div class="lead__grid">
+          <Field idPrefix={idPrefix} class="span-2" name="name" label="Full name" required autocomplete="name" placeholder="Your name" />
+          <Field idPrefix={idPrefix} name="email" label="Email" type="email" required autocomplete="email" inputmode="email" placeholder="you@email.com" />
+          <Field idPrefix={idPrefix} name="phone" label="WhatsApp / mobile" type="tel" required autocomplete="tel" inputmode="tel" placeholder="+91 00000 00000" hint="Include country code" />
+          <Field idPrefix={idPrefix} class="span-2" name="country" label="Travelling from" list={`${idPrefix}-countries`} autocomplete="country-name" placeholder="Country" optional />
+          <datalist id={`${idPrefix}-countries`}>{countries.map((c) => <option value={c} />)}</datalist>
+          <Field idPrefix={idPrefix} class="span-2" name="message" label="Anything we should know?" type="textarea" rows={3} optional placeholder="Interests, special occasions, must-see places…" />
+        </div>
+        <div class="lead__actions lead__actions--split">
+          <button type="button" class="btn btn--ghost" data-prev>Back</button>
+          <button type="submit" class="btn btn--lg">{label}</button>
+        </div>
+      </fieldset>
+    </>
+  ) : (
+    <div class="lead__grid">
+      {lockInterest && <input type="hidden" name="interest" value={interest} />}
+      {!tourTitle && !lockInterest && (
+        <Field idPrefix={idPrefix} class="span-2" name="interest" label="Where to?" type="select" value={interest} options={interestOptions} groups={groups} />
+      )}
+      <Field idPrefix={idPrefix} class="span-2" name="name" label="Full name" required autocomplete="name" placeholder="Your name" />
+      <Field idPrefix={idPrefix} class="span-2" name="email" label="Email" type="email" required autocomplete="email" inputmode="email" placeholder="you@email.com" />
+      <Field idPrefix={idPrefix} name="phone" label="WhatsApp" type="tel" autocomplete="tel" inputmode="tel" placeholder="+91 00000 00000" optional />
+      <Field idPrefix={idPrefix} name="month" label="When?" type="select" options={[{ value: '', label: 'Flexible' }, ...months]} />
+      <button type="submit" class="btn btn--lg btn--block span-2">{label}</button>
+    </div>
+  )}
+
+  <div class="form-failure" data-failure hidden role="alert">
+    <strong>We couldn’t send that just now.</strong>
+    <span>Your details are saved — reach us instantly instead:</span>
+    <div class="form-failure__actions">
+      {site.contact.whatsapp && (
+        <a class="btn btn--green" data-fallback-whatsapp href="#" target="_blank" rel="noopener"><Icon name="whatsapp" size={18} /> WhatsApp us</a>
+      )}
+      <a class="btn btn--ghost" data-fallback-email href="#"><Icon name="mail" size={18} /> Email us</a>
+    </div>
+  </div>
+
+  <p class="lead__assure"><Icon name="shield" size={16} /> No spam, no obligation. Reply within {site.claims.proposalHours} hours.</p>
+</form>
+
+<style>
+  .lead {
+    display: grid;
+    gap: var(--space-5);
+  }
+  .lead__step {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+  .lead__step[hidden] {
+    display: none;
+  }
+  .lead__title {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 560;
+    line-height: 1.15;
+  }
+  .lead__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+  .lead__grid :global(.span-2),
+  .lead .span-2 {
+    grid-column: 1 / -1;
+  }
+  .lead__counts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+    gap: var(--space-3);
+  }
+  .lead__counts :global(.stepper) {
+    grid-template-columns: 2.4rem minmax(0, 1fr) 2.4rem;
+  }
+  .lead__actions {
+    margin-top: var(--space-2);
+  }
+  .lead__actions--split {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-3);
+  }
+  .lead__assure {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 0.82rem;
+    color: var(--ink-3);
+  }
+  .lead__assure :global(svg) {
+    color: var(--green);
+    flex: none;
+  }
+  .lead--compact .lead__grid {
+    gap: var(--space-3);
+  }
+  @media (max-width: 34rem) {
+    .lead__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

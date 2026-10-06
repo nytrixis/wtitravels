@@ -1,0 +1,166 @@
+---
+import { Image } from 'astro:assets';
+import EnquiryForm from '@/components/forms/EnquiryForm.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { site } from '@/config/site';
+import camel from '@/assets/hero/jaisalmer.jpg';
+---
+
+<!--
+  Lead-capture dialog. Shown once per visitor-week on exit intent (desktop) or after
+  engaged reading (mobile). Never on conversion pages. See the <script> for the rules.
+-->
+<dialog class="pop" data-popup aria-labelledby="pop-title" data-location="popup">
+  <button class="pop__close" type="button" aria-label="Close" data-popup-close><Icon name="x" size={22} /></button>
+  <div class="pop__art arch" aria-hidden="true">
+    <Image src={camel} alt="" width={420} height={560} widths={[420, 840]} sizes="320px" loading="lazy" />
+  </div>
+  <div class="pop__body">
+    <p class="eyebrow">Before you go</p>
+    <h2 id="pop-title">Get a free itinerary in {site.claims.proposalHours}&nbsp;hours</h2>
+    <p class="pop__lede">
+      Tell us where you’re dreaming of. A real trip planner will send a day-by-day plan with transparent pricing — no obligation.
+    </p>
+    <EnquiryForm source="popup" variant="compact" submitLabel="Send me my plan" idPrefix="pop" />
+  </div>
+</dialog>
+
+<style>
+  .pop {
+    border: 0;
+    padding: 0;
+    width: min(54rem, calc(100% - 2rem));
+    max-height: calc(100dvh - 2rem);
+    margin: auto;
+    border-radius: var(--radius-l);
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: var(--shadow-l);
+    overflow: auto;
+  }
+  .pop[open] {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    animation: pop-in 0.35s var(--ease);
+  }
+  .pop::backdrop {
+    background: rgb(7 28 18 / 0.6);
+    backdrop-filter: blur(3px);
+  }
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.98);
+    }
+  }
+  .pop__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: 50%;
+    background: var(--paper);
+    box-shadow: var(--shadow-s);
+  }
+  .pop__art {
+    margin: 1rem 0 1rem 1rem;
+    min-height: 22rem;
+  }
+  .pop__art :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .pop__body {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    align-content: start;
+  }
+  .pop h2 {
+    font-size: var(--step-3);
+  }
+  .pop__lede {
+    color: var(--ink-2);
+    font-size: 0.95rem;
+  }
+  @media (max-width: 44rem) {
+    .pop[open] {
+      grid-template-columns: 1fr;
+    }
+    .pop__art {
+      display: none;
+    }
+    .pop__body {
+      padding: var(--space-5);
+      padding-top: var(--space-6);
+    }
+  }
+</style>
+
+<script>
+  import { hasSubmittedLead } from '@/scripts/lead';
+  import { track } from '@/scripts/telemetry';
+  import { local, session } from '@/scripts/telemetry/storage';
+
+  const dialog = document.querySelector<HTMLDialogElement>('[data-popup]');
+  const DISMISSED = 'wti_popup_dismissed';
+  const WEEK = 7 * 24 * 3600 * 1000;
+  const SKIP = /^\/(plan-your-trip|thank-you|contact)\//;
+
+  const eligible = (): boolean => {
+    if (!dialog || SKIP.test(location.pathname)) return false;
+    if (hasSubmittedLead() || session.get('wti_popup_shown')) return false;
+    const last = Number(local.get(DISMISSED) ?? 0);
+    if (last && Date.now() - last < WEEK) return false;
+    // Never stack on top of another overlay.
+    return !document.querySelector('dialog[open], [data-drawer]:not([hidden])');
+  };
+
+  const open = (trigger: string) => {
+    if (!eligible() || !dialog) return;
+    session.set('wti_popup_shown', '1');
+    dialog.showModal();
+    track('popup_view', { trigger });
+  };
+
+  const close = (reason: string) => {
+    if (!dialog?.open) return;
+    dialog.close();
+    local.set(DISMISSED, String(Date.now()));
+    track('popup_dismiss', { reason });
+  };
+
+  if (dialog) {
+    dialog.querySelector('[data-popup-close]')?.addEventListener('click', () => close('button'));
+    dialog.addEventListener('click', (e) => e.target === dialog && close('backdrop'));
+    dialog.addEventListener('cancel', () => local.set(DISMISSED, String(Date.now())));
+
+    const fine = matchMedia('(pointer: fine)').matches;
+    const armedAt = Date.now() + 12_000;
+
+    if (fine) {
+      // Desktop: cursor leaves through the top of the viewport after 12s on page.
+      document.addEventListener('mouseout', (e) => {
+        if (e.clientY <= 0 && !e.relatedTarget && Date.now() > armedAt) open('exit_intent');
+      });
+    } else {
+      // Touch: reader has scrolled 45% of the page and stayed 40s.
+      let timer = 0;
+      const check = () => {
+        const doc = document.documentElement;
+        const pct = scrollY / Math.max(1, doc.scrollHeight - innerHeight);
+        if (pct > 0.45 && Date.now() - (armedAt - 12_000) > 40_000) {
+          clearInterval(timer);
+          open('engaged_mobile');
+        }
+      };
+      timer = window.setInterval(check, 2000);
+    }
+  }
+</script>

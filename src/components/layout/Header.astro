@@ -1,0 +1,569 @@
+---
+import { Image } from 'astro:assets';
+import Icon from '@/components/ui/Icon.astro';
+import Logo from '@/components/ui/Logo.astro';
+import { site } from '@/config/site';
+import { destinations, destinationUrl } from '@/data/destinations';
+import { collectionUrl, packageCollections, styleCollections, toursIn } from '@/data/collections';
+import { taxiPages, taxiUrl } from '@/data/taxi';
+import { tours } from '@/lib/tours';
+import tajMahal from '@/assets/hero/taj-mahal.jpg';
+import bhutan from '@/assets/hero/bhutan.jpg';
+import nepal from '@/assets/hero/nepal.jpg';
+import sriLanka from '@/assets/hero/sri-lanka.jpg';
+import india from '@/assets/hero/hawa-mahal.jpg';
+
+interface Props {
+  /** "overlay" floats transparently above a dark hero. */
+  variant?: 'solid' | 'overlay';
+  /** Logo + contact only — for ad landing and conversion pages. */
+  minimal?: boolean;
+}
+const { variant = 'solid', minimal = false } = Astro.props;
+const current = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? current === '/' : current.startsWith(href));
+
+const destThumb = { india, nepal, bhutan, 'sri-lanka': sriLanka } as const;
+---
+
+<header class:list={['header', `header--${variant}`]} data-header data-location="header">
+  <div class="header__bar container">
+    <a href="/" class="header__logo" aria-label={`${site.name} — home`}>
+      <Logo />
+    </a>
+
+    {!minimal && <nav class="nav" aria-label="Primary">
+      <ul role="list" class="nav__list">
+        <li class="nav__item">
+          <a href="/destinations/india/" class:list={['nav__link', isActive('/destinations') && 'is-active']}>
+            Destinations <Icon name="chevron-down" size={14} />
+          </a>
+          <div class="nav__panel nav__panel--dest">
+            <ul role="list" class="dest-list">
+              {destinations.map((d) => (
+                <li>
+                  <a href={destinationUrl(d.slug)} class="dest-link">
+                    <span class="dest-link__thumb arch">
+                      <Image src={destThumb[d.id]} alt="" width={96} height={120} widths={[96, 192]} sizes="48px" />
+                    </span>
+                    <span>
+                      <strong>{d.name}</strong>
+                      <small>{d.strapline}</small>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </li>
+
+        <li class="nav__item">
+          <a href="/tours/" class:list={['nav__link', (isActive('/tours') || isActive('/collections')) && 'is-active']}>
+            Tours <Icon name="chevron-down" size={14} />
+          </a>
+          <div class="nav__panel nav__panel--mega">
+            <div class="mega">
+              <div class="mega__col">
+                <p class="mega__title">By style</p>
+                <ul role="list">
+                  {styleCollections.map((c) => (
+                    <li>
+                      <a href={collectionUrl(c.slug)}>{c.label}<span>{toursIn(c).length}</span></a>
+                    </li>
+                  ))}
+                </ul>
+                <a href="/tours/" class="link-arrow mega__all">All {tours.length} tours</a>
+              </div>
+              <div class="mega__col mega__col--wide">
+                <p class="mega__title">Holiday packages</p>
+                <ul role="list" class="mega__grid">
+                  {packageCollections.map((c) => (
+                    <li>
+                      <a href={collectionUrl(c.slug)}>{c.label}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <a href="/plan-your-trip/" class="mega__card" data-track="cta_click" data-track-location="mega_menu" data-track-label="plan_my_trip">
+                <Image src={tajMahal} alt="" width={420} height={300} widths={[420, 840]} sizes="210px" />
+                <span class="mega__card-body">
+                  <strong>Not sure where to start?</strong>
+                  <small>Tell us your dates — get a plan in {site.claims.proposalHours} hrs.</small>
+                  <span class="link-arrow">Plan my trip</span>
+                </span>
+              </a>
+            </div>
+          </div>
+        </li>
+
+        <li class="nav__item">
+          <a href="/hire-a-taxi/" class:list={['nav__link', isActive('/hire-a-taxi') && 'is-active']}>
+            Hire a taxi <Icon name="chevron-down" size={14} />
+          </a>
+          <div class="nav__panel nav__panel--simple">
+            <ul role="list">
+              {taxiPages.map((t) => (
+                <li><a href={taxiUrl(t.slug)}>{t.name} tour by car</a></li>
+              ))}
+            </ul>
+          </div>
+        </li>
+
+        <li><a href="/about/" class:list={['nav__link', isActive('/about') && 'is-active']}>About</a></li>
+        <li><a href="/blog/" class:list={['nav__link', isActive('/blog') && 'is-active']}>Journal</a></li>
+        <li><a href="/contact/" class:list={['nav__link', isActive('/contact') && 'is-active']}>Contact</a></li>
+      </ul>
+    </nav>}
+
+    <div class="header__actions" style={minimal ? 'margin-left:auto' : undefined}>
+      <a href={site.contact.phoneHref} class="header__phone" data-track-location="header">
+        <Icon name="phone" size={18} />
+        <span>{site.contact.phone}</span>
+      </a>
+      <a href="/plan-your-trip/" class="btn header__cta" data-track="cta_click" data-track-location="header" data-track-label="plan_my_trip">
+        Plan my trip
+      </a>
+      {!minimal && <button class="header__burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu" data-menu-open>
+        <Icon name="menu" size={26} />
+      </button>}
+    </div>
+  </div>
+
+  <!-- Mobile drawer -->
+  {!minimal && <div class="drawer" id="mobile-menu" hidden data-drawer>
+    <div class="drawer__top container">
+      <a href="/" aria-label="Home"><Logo /></a>
+      <button class="header__burger" type="button" aria-label="Close menu" data-menu-close>
+        <Icon name="x" size={26} />
+      </button>
+    </div>
+    <div class="drawer__body container">
+      <nav aria-label="Mobile">
+        <details class="acc">
+          <summary>Destinations <Icon name="chevron-down" size={18} /></summary>
+          <ul role="list">
+            {destinations.map((d) => <li><a href={destinationUrl(d.slug)}>{d.name}</a></li>)}
+          </ul>
+        </details>
+        <details class="acc">
+          <summary>Tours by style <Icon name="chevron-down" size={18} /></summary>
+          <ul role="list">
+            {styleCollections.map((c) => <li><a href={collectionUrl(c.slug)}>{c.label}</a></li>)}
+            <li><a href="/tours/"><strong>All tours</strong></a></li>
+          </ul>
+        </details>
+        <details class="acc">
+          <summary>Holiday packages <Icon name="chevron-down" size={18} /></summary>
+          <ul role="list">
+            {packageCollections.map((c) => <li><a href={collectionUrl(c.slug)}>{c.label}</a></li>)}
+          </ul>
+        </details>
+        <details class="acc">
+          <summary>Hire a taxi <Icon name="chevron-down" size={18} /></summary>
+          <ul role="list">
+            {taxiPages.map((t) => <li><a href={taxiUrl(t.slug)}>{t.name} tour by car</a></li>)}
+          </ul>
+        </details>
+        <a class="drawer__link" href="/about/">About</a>
+        <a class="drawer__link" href="/blog/">Journal</a>
+        <a class="drawer__link" href="/contact/">Contact</a>
+      </nav>
+      <div class="drawer__cta">
+        <a href="/plan-your-trip/" class="btn btn--lg btn--block" data-track="cta_click" data-track-location="drawer" data-track-label="plan_my_trip">Plan my trip</a>
+        <a href={site.contact.phoneHref} class="btn btn--ghost btn--block" data-track-location="drawer">
+          <Icon name="phone" size={18} /> {site.contact.phone}
+        </a>
+      </div>
+    </div>
+  </div>}
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: var(--header-h);
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
+    backdrop-filter: saturate(1.4) blur(14px);
+    border-bottom: 1px solid var(--line);
+    transition:
+      transform 0.45s var(--ease-out-expo),
+      background 0.3s var(--ease),
+      border-color 0.3s var(--ease);
+  }
+  /* Overlay variant floats on the hero until the page scrolls */
+  .header--overlay {
+    position: fixed;
+    inset: 0 0 auto 0;
+    background: transparent;
+    backdrop-filter: none;
+    border-color: transparent;
+    color: var(--white);
+  }
+  .header--overlay :global(.logo) {
+    color: var(--white);
+  }
+  .header--overlay.is-scrolled {
+    background: color-mix(in srgb, var(--paper) 94%, transparent);
+    backdrop-filter: saturate(1.4) blur(14px);
+    border-color: var(--line);
+    color: var(--ink);
+  }
+  .header--overlay.is-scrolled :global(.logo) {
+    color: var(--ink);
+  }
+  .header__bar {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+  }
+  .header__logo {
+    display: inline-flex;
+    text-decoration: none;
+  }
+  .nav {
+    margin-inline: auto;
+  }
+  .nav__list {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0;
+  }
+  .nav__item {
+    position: relative;
+  }
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 999px;
+    font-weight: 560;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: background 0.2s var(--ease);
+  }
+  .nav__link:hover,
+  .nav__item:focus-within > .nav__link {
+    background: rgb(127 127 127 / 0.14);
+  }
+  .nav__link.is-active {
+    text-decoration: underline;
+    text-decoration-color: var(--orange);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.45em;
+  }
+  .nav__panel {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    left: 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition:
+      opacity 0.2s var(--ease),
+      transform 0.2s var(--ease),
+      visibility 0s linear 0.2s;
+    background: var(--paper);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-l);
+    padding: var(--space-4);
+  }
+  .nav__item:hover > .nav__panel,
+  .nav__item:focus-within > .nav__panel {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+  }
+  /* Hover bridge so the pointer can travel from link to panel */
+  .nav__panel::before {
+    content: '';
+    position: absolute;
+    inset: -0.5rem 0 auto 0;
+    height: 0.5rem;
+  }
+  .nav__panel--dest {
+    width: 22rem;
+  }
+  .nav__panel--simple {
+    width: 16rem;
+    padding: var(--space-2);
+  }
+  .nav__panel--simple a {
+    display: block;
+    padding: 0.7rem 0.9rem;
+    border-radius: var(--radius-s);
+    text-decoration: none;
+    font-weight: 560;
+  }
+  .nav__panel--simple a:hover {
+    background: var(--paper-2);
+  }
+  .nav__panel--mega {
+    left: 50%;
+    translate: -35% 0;
+    width: min(54rem, 92vw);
+  }
+  .dest-list {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+  }
+  .dest-link {
+    display: flex;
+    gap: 0.9rem;
+    align-items: center;
+    padding: 0.55rem;
+    border-radius: var(--radius-s);
+    text-decoration: none;
+  }
+  .dest-link:hover {
+    background: var(--paper-2);
+  }
+  .dest-link__thumb {
+    flex: none;
+    width: 3rem;
+    height: 3.75rem;
+  }
+  .dest-link__thumb :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .dest-link strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 560;
+  }
+  .dest-link small {
+    display: block;
+    color: var(--ink-3);
+    line-height: 1.35;
+    font-size: 0.82rem;
+  }
+  .mega {
+    display: grid;
+    grid-template-columns: 11rem 1fr 13rem;
+    gap: var(--space-5);
+  }
+  .mega__title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+  .mega ul {
+    margin: 0;
+  }
+  .mega li a {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0.5rem;
+    margin-inline: -0.5rem;
+    border-radius: 0.4rem;
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+  .mega li a:hover {
+    background: var(--paper-2);
+  }
+  .mega li a span {
+    color: var(--ink-3);
+    font-size: 0.8rem;
+  }
+  .mega__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--space-4);
+  }
+  .mega__all {
+    margin-top: 0.8rem;
+    font-size: 0.92rem;
+  }
+  .mega__card {
+    display: grid;
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    background: var(--forest);
+    color: var(--white);
+    text-decoration: none;
+    align-content: start;
+  }
+  .mega__card :global(img) {
+    width: 100%;
+    height: 7.5rem;
+    object-fit: cover;
+  }
+  .mega__card-body {
+    display: grid;
+    gap: 0.3rem;
+    padding: 0.9rem;
+  }
+  .mega__card-body strong {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    line-height: 1.2;
+    font-weight: 560;
+  }
+  .mega__card-body small {
+    opacity: 0.8;
+    line-height: 1.4;
+  }
+  .mega__card .link-arrow {
+    color: var(--orange);
+    margin-top: 0.3rem;
+  }
+
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .header__phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 600;
+    font-size: 0.92rem;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .header__cta {
+    min-height: 2.75rem;
+    padding: 0.55rem 1.2rem;
+    font-size: 0.95rem;
+  }
+  .header__burger {
+    display: none;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    background: transparent;
+    border-radius: 50%;
+    color: inherit;
+  }
+
+  /* Drawer */
+  .drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    background: var(--paper);
+    color: var(--ink);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .drawer[hidden] {
+    display: none;
+  }
+  .drawer :global(.logo),
+  .header--overlay .drawer :global(.logo) {
+    color: var(--ink);
+  }
+  .drawer__top {
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .drawer__body {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: var(--space-4) var(--space-7);
+  }
+  .acc {
+    border-bottom: 1px solid var(--line);
+  }
+  .acc summary,
+  .drawer__link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 3.5rem;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 540;
+    list-style: none;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .drawer__link {
+    border-bottom: 1px solid var(--line);
+  }
+  .acc summary::-webkit-details-marker {
+    display: none;
+  }
+  .acc[open] summary :global(svg) {
+    rotate: 180deg;
+  }
+  .acc ul {
+    display: grid;
+    margin: 0 0 var(--space-3);
+  }
+  .acc li a {
+    display: block;
+    padding: 0.65rem 0;
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+  .drawer__cta {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  @media (max-width: 68rem) {
+    .nav,
+    .header__phone {
+      display: none;
+    }
+    .header__burger {
+      display: grid;
+    }
+    .header__actions {
+      margin-left: auto;
+    }
+  }
+  @media (max-width: 30rem) {
+    .header__cta {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { lockScroll } from '@/scripts/motion';
+
+  const drawer = document.querySelector<HTMLElement>('[data-drawer]');
+  const openBtn = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+  const closeBtn = document.querySelector<HTMLButtonElement>('[data-menu-close]');
+
+  const toggle = (open: boolean) => {
+    if (!drawer || !openBtn) return;
+    drawer.hidden = !open;
+    openBtn.setAttribute('aria-expanded', String(open));
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+    lockScroll(open);
+    (open ? closeBtn : openBtn)?.focus();
+  };
+
+  openBtn?.addEventListener('click', () => toggle(true));
+  closeBtn?.addEventListener('click', () => toggle(false));
+  drawer?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) toggle(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && drawer && !drawer.hidden) toggle(false);
+  });
+  matchMedia('(min-width: 68.01rem)').addEventListener('change', (e) => e.matches && toggle(false));
+</script>

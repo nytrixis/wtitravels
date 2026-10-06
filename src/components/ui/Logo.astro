@@ -1,0 +1,64 @@
+---
+/**
+ * WTI mark rebuilt as vector artwork from the brand description (orange W, green T, white I).
+ * To use the original artwork instead: drop it in /public/logo.svg and replace the <svg> below
+ * with <img src="/logo.svg" alt="" height="40">.
+ */
+interface Props {
+  /** "light" renders the wordmark for dark backgrounds. */
+  tone?: 'dark' | 'light';
+  /** Hide the "Tours & Travels" line (tight spaces). */
+  compact?: boolean;
+}
+const { tone = 'dark', compact = false } = Astro.props;
+---
+
+<span class:list={['logo', tone === 'light' && 'logo--light']}>
+  <svg class="logo__mark" viewBox="0 0 132 44" width="86" height="29" aria-hidden="true" focusable="false">
+    <circle cx="22" cy="22" r="20" fill="#ff7a1a" />
+    <path d="M11 14.5 16.8 30.5 22 19.5 27.2 30.5 33 14.5" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="66" cy="22" r="20" fill="#138808" />
+    <path d="M56 15h20M66 15v16" fill="none" stroke="#fff" stroke-width="3.8" stroke-linecap="round" />
+    <circle cx="110" cy="22" r="19.2" fill="#fff" stroke="#c9d8c4" stroke-width="1.6" />
+    <path d="M110 14.5v16M104.8 14.5h10.4M104.8 30.5h10.4" fill="none" stroke="#0c3a25" stroke-width="3.6" stroke-linecap="round" />
+  </svg>
+  {!compact && (
+    <span class="logo__text">
+      <strong>Tours &amp; Travels</strong>
+    </span>
+  )}
+</span>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .logo--light {
+    color: var(--white);
+  }
+  .logo__mark {
+    flex: none;
+    height: 1.9rem;
+    width: auto;
+  }
+  .logo__text strong {
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' 14;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    border-left: 1.5px solid currentColor;
+    padding-left: 0.7rem;
+    opacity: 0.9;
+  }
+  @media (max-width: 30rem) {
+    .logo__text {
+      display: none;
+    }
+  }
+</style>

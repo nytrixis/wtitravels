@@ -1,0 +1,97 @@
+---
+import CtaBand from '@/components/marketing/CtaBand.astro';
+import TourGrid from '@/components/tours/TourGrid.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import { collectionUrl, collections, toursIn, type Collection } from '@/data/collections';
+import { breadcrumbSchema, itemListSchema } from '@/lib/schema';
+import { collectionHero } from '@/lib/heroes';
+import { tourUrl } from '@/lib/tours';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+  return collections.map((collection) => ({ params: { slug: collection.slug }, props: { collection } }));
+}
+
+const { collection } = Astro.props as { collection: Collection };
+const list = toursIn(collection);
+const hero = collectionHero(collection.slug);
+const [lead, ...rest] = collection.intro;
+const others = collections.filter((c) => c.slug !== collection.slug && c.kind === collection.kind);
+const kindLabel = collection.kind === 'style' ? 'Tour styles' : 'Holiday packages';
+---
+
+<BaseLayout
+  title={collection.title}
+  description={collection.metaDescription}
+  image={hero.image}
+  schema={[
+    breadcrumbSchema([
+      { name: 'Home', href: '/' },
+      { name: 'Tours', href: '/tours/' },
+      { name: collection.title, href: collectionUrl(collection.slug) },
+    ]),
+    itemListSchema(collection.title, list.map((t) => ({ name: t.title, href: tourUrl(t.slug) }))),
+  ]}
+>
+  <PageHero
+    eyebrow={kindLabel}
+    title={collection.heading}
+    lede={lead}
+    crumbs={[{ name: 'Tours', href: '/tours/' }, { name: collection.label }]}
+    image={hero.image}
+    focus={hero.focus}
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow">{list.length} {list.length === 1 ? 'itinerary' : 'itineraries'}</p>
+          <h2>{collection.label} tours</h2>
+        </div>
+        <a href="/tours/" class="link-arrow">Browse all tours</a>
+      </div>
+      <TourGrid tours={list} list={`collection_${collection.slug}`} />
+    </div>
+  </section>
+
+  {rest.length > 0 && (
+    <section class="section section--tint">
+      <div class="container--narrow prose">
+        {rest.map((p) => <p>{p}</p>)}
+      </div>
+    </section>
+  )}
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Keep exploring</p>
+        <h2>More {collection.kind === 'style' ? 'ways to travel' : 'holiday packages'}</h2>
+      </div>
+      <ul role="list" class="chips">
+        {others.map((c) => <li><a class="chip chip--link" href={collectionUrl(c.slug)}>{c.label}</a></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand source={`collection-${collection.slug}`} interest="Tailor-made / not sure yet" heading={`Tailor a ${collection.label.toLowerCase()} trip`} />
+</BaseLayout>
+
+<style>
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 0;
+  }
+  .chip--link {
+    min-height: 2.75rem;
+    transition: all 0.2s var(--ease);
+  }
+  .chip--link:hover {
+    background: var(--ink);
+    color: var(--white);
+    border-color: var(--ink);
+  }
+</style>

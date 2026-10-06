@@ -1,0 +1,69 @@
+---
+import TourCard from './TourCard.astro';
+import type { Tour } from '@/lib/tours';
+
+interface Props {
+  tours: Tour[];
+  list: string;
+  /** Horizontal snap-scrolling rail on phones instead of a long stack. */
+  rail?: boolean;
+  columns?: 3 | 4;
+}
+const { tours, list, rail = false, columns = 3 } = Astro.props;
+---
+
+<ul role="list" class:list={['grid', `grid--${columns}`, rail && 'grid--rail']} data-location={list}>
+  {tours.map((tour, i) => (
+    <li data-reveal style={`--reveal-delay:${(i % columns) * 70}ms`}>
+      <TourCard {tour} {list} index={i} />
+    </li>
+  ))}
+</ul>
+
+<style>
+  .grid {
+    display: grid;
+    gap: var(--space-5);
+    margin: 0;
+  }
+  .grid--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .grid--4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  @media (max-width: 74rem) {
+    .grid--4 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 62rem) {
+    .grid--3,
+    .grid--4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 40rem) {
+    .grid--3,
+    .grid--4 {
+      grid-template-columns: 1fr;
+    }
+    .grid--rail {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      margin-inline: calc(var(--gutter) * -1);
+      padding-inline: var(--gutter);
+      padding-bottom: var(--space-4);
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .grid--rail::-webkit-scrollbar {
+      display: none;
+    }
+    .grid--rail > li {
+      flex: 0 0 82%;
+      scroll-snap-align: start;
+    }
+  }
+</style>

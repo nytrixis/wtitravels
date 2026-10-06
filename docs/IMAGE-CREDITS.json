@@ -1,0 +1,178 @@
+[
+ {
+  "file": "01-taj-mahal-sunrise.jpg",
+  "subject": "Taj Mahal at sunrise, reflecting pool",
+  "photographer": "Shan Elahi (per search snippet; unverified)",
+  "sourceUrl": "https://unsplash.com/photos/DDiLYt_F88w",
+  "license": "Unsplash License (free commercial use, no attribution required)",
+  "width": 2400,
+  "height": 1728,
+  "dominantMood": "warm pastel, serene",
+  "focalPointHint": "center"
+ },
+ {
+  "file": "02-hawa-mahal-jaipur.jpg",
+  "subject": "Hawa Mahal facade, Jaipur",
+  "photographer": "unknown (not retrievable)",
+  "sourceUrl": "https://unsplash.com/photos/slTVVuk7hZU",
+  "license": "Unsplash License (free commercial use, no attribution required)",
+  "width": 2400,
+  "height": 1536,
+  "dominantMood": "muted rose, calm, minimalist",
+  "focalPointHint": "center (facade fills frame; sky on top)"
+ },
+ {
+  "file": "03-amber-fort-jaipur.jpg",
+  "subject": "Amer/Amber Fort courtyard with chhatris",
+  "photographer": "unknown (not retrievable)",
+  "sourceUrl": "https://unsplash.com/photos/KoQ0vv6Aaw4",
+  "license": "Unsplash License (free commercial use, no attribution required)",
+  "width": 2400,
+  "height": 1600,
+  "dominantMood": "warm sand, hazy, airy",
+  "focalPointHint": "center-left; small figures in courtyard"
+ },
+ {
+  "file": "04-udaipur-lake-pichola-dusk.jpg",
+  "subject": "Lake Pichola at sunset with Lake Palace hotel on horizon",
+  "photographer": "Bigul Malayi",
+  "sourceUrl": "https://pd.w.org/2024/01/81365985b260a29f3.57149392-2048x1536.jpeg",
+  "license": "CC0 1.0 (WordPress Photo Directory; found via Openverse)",
+  "width": 2048,
+  "height": 1536,
+  "dominantMood": "soft pink-teal dusk, tranquil",
+  "focalPointHint": "lower center (palace at horizon); only 2048px wide, upscaling will soften"
+ },
+ {
+  "file": "05-jodhpur-blue-city.jpg",
+  "subject": "Blue city of Jodhpur from Mehrangarh Fort",
+  "photographer": "Kushagra140",
+  "sourceUrl": "https://commons.wikimedia.org/wiki/File:BluecityviewfromMehrangarhFort.jpg",
+  "license": "CC0 1.0 (Wikimedia Commons, per Openverse)",
+  "width": 2400,
+  "height": 1800,
+  "dominantMood": "hazy morning, cool blue",
+  "focalPointHint": "lower half (rooftops); sky upper half; mildly soft/hazy"
+ },
+ {
+  "file": "06-jaisalmer-camel-sunset.jpg",
+  "subject": "Camel silhouette against orange sunset, Jaisalmer dunes",
+  "photographer": "Sumit Kr Sau (per search snippet; unverified)",
+  "sourceUrl": "https://unsplash.com/photos/DmK8oBcHLck",
+  "license": "Unsplash License (free commercial use, no attribution required)",
+  "width": 2400,
+  "height": 1590,
+  "dominantMood": "saturated amber gold, dramatic",
+  "focalPointHint": "left third (camel+handler), sky above; 2 small figures in silhouette"
+ },
+ {
+  "file": "07-kerala-backwaters-houseboat.jpg",
+  "subject": "Houseboat on Kerala backwaters",
+  "photographer": "unknown (candidates named: Abhishek Prasad / Kunal Kalra - unverified)",
+  "sourceUrl": "https://unsplash.com/photos/N3VzleBhOvk",
+  "license": "Unsplash License (free commercial use, no attribution required)",
+  "width": 2400,
+  "height": 1602,
+  "dominantMood": "bright, tropical, fresh (a bit saturated)",
+  "focalPointHint": "right-center (houseboat); sky upper left"
+ },
+ {
+  "file": "08-varanasi-ganga-aarti.jpg",
+  "subject": "Ganga Aarti ceremony at Assi Ghat, Varanasi",
+  "photographer": "Junglecat29",
+  "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ek_Assi_ka_Shaam.jpg",
+  "license": "CC0 1.0 (Wikimedia Commons, per Openverse)",
+  "width": 2400,
+  "height": 1799,
+  "dominantMood": "dark, smoky, devotional",
+  "focalPointHint": "center-left; crowd with phones visible, low-key exposure"
+ },
+ {
+  "file": "09-dal-lake-kashmir.jpg",
+  "subject": "Shikara on Dal Lake with Pir Panjal mountains",
+  "photographer": "unknown (not retrievable)",
+  "sourceUrl": "https://unsplash.com/photos/hcRK-x_H21g",
+  "license": "Unsplash License (free commercial use, no attribution required)",
+  "width": 2400,
+  "height": 1600,
+  "dominantMood": "cool blue, tranquil",
+  "focalPointHint": "center; mountains upper right, sky upper left"
+ },
+ {
+  "file": "10-boudhanath-stupa-prayer-flags.jpg",
+  "subject": "Boudhanath stupa with prayer flags, Kathmandu",
+  "photographer": "unknown (not retrievable)",
+  "sourceUrl": "https://unsplash.com/photos/3Q6fuSuCplA",
+  "license": "Unsplash License (free commercial use, no attribution required)",
+  "width": 2400,
+  "height": 1600,
+  "dominantMood": "vivid, colourful, heavily graded",
+  "focalPointHint": "left third (stupa spire); flags sweep right"
+ },
+ {
+  "file": "11-bhutan-tigers-nest.jpg",
+  "subject": "Paro Taktsang (Tiger's Nest) on its cliff",
+  "photographer": "unknown (not retrievable)",
+  "sourceUrl": "https://unsplash.com/photos/Med8BHIsmRU",
+  "license": "Unsplash License (free commercial use, no attribution required)",
+  "width": 2400,
+  "height": 1600,
+  "dominantMood": "natural, green-grey, awe-inspiring",
+  "focalPointHint": "center-left (monastery); sky upper right"
+ },
+ {
+  "file": "12-sigiriya-aerial.jpg",
+  "subject": "Aerial view of Sigiriya rock fortress",
+  "photographer": "unknown (not retrievable)",
+  "sourceUrl": "https://unsplash.com/photos/smUAKwMT8XA",
+  "license": "Unsplash License (free commercial use, no attribution required)",
+  "width": 2400,
+  "height": 1800,
+  "dominantMood": "lush green, dramatic (saturated)",
+  "focalPointHint": "center-left (rock); only 4000x3000 source"
+ },
+ {
+  "file": "13-humayuns-tomb-delhi.jpg",
+  "subject": "Humayun's Tomb, Delhi",
+  "photographer": "unknown (not retrievable)",
+  "sourceUrl": "https://unsplash.com/photos/5dlUHBmGCuI",
+  "license": "Unsplash License (free commercial use, no attribution required)",
+  "width": 2400,
+  "height": 1412,
+  "dominantMood": "warm red sandstone vs teal sky, graphic",
+  "focalPointHint": "center; few small figures at base"
+ },
+ {
+  "file": "14-hampi-vittala-temple.jpg",
+  "subject": "Vittala Temple, Hampi",
+  "photographer": "unknown (not retrievable)",
+  "sourceUrl": "https://unsplash.com/photos/TN6WLhneISI",
+  "license": "Unsplash License (free commercial use, no attribution required)",
+  "width": 2400,
+  "height": 1600,
+  "dominantMood": "earthy terracotta, teal sky, symmetrical",
+  "focalPointHint": "center (symmetric); NOT a gopuram - Madurai not found"
+ },
+ {
+  "file": "15-rajasthan-turban-window-jodhpur.jpg",
+  "subject": "Man in orange turban at Mehrangarh window, Jodhpur",
+  "photographer": "Digjot Singh (per search snippet; unverified)",
+  "sourceUrl": "https://unsplash.com/photos/xfO7tDHi0w0",
+  "license": "Unsplash License (free commercial use, no attribution required)",
+  "width": 2400,
+  "height": 1590,
+  "dominantMood": "moody chiaroscuro, warm",
+  "focalPointHint": "center-left (figure) with arched window right"
+ },
+ {
+  "file": "16-amer-palace-jali-interior.jpg",
+  "subject": "Jali screen niche with light rays, Amer palace interior (Jaipur)",
+  "photographer": "lensnmatter",
+  "sourceUrl": "https://commons.wikimedia.org/wiki/File:Amer,_Jaipur_(48731880138).jpg",
+  "license": "CC0 1.0 (Wikimedia Commons, per Openverse)",
+  "width": 2400,
+  "height": 1434,
+  "dominantMood": "deep red, theatrical light",
+  "focalPointHint": "center (jali window); no people"
+ }
+]

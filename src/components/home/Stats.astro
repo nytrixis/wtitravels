@@ -1,0 +1,66 @@
+---
+import { site } from '@/config/site';
+import { destinations } from '@/data/destinations';
+import { tours } from '@/lib/tours';
+
+const stats = [
+  { to: tours.length, suffix: '', label: 'Tailor-made tours' },
+  { to: destinations.length, suffix: '', label: 'Countries covered' },
+  { to: 15000, suffix: '+', label: 'Happy travelers' },
+  { to: site.claims.proposalHours, suffix: ' hrs', label: 'To your proposal' },
+];
+---
+
+<ul role="list" class="stats">
+  {stats.map((s, i) => (
+    <li data-reveal style={`--reveal-delay:${i * 90}ms`}>
+      <strong class="num"><span data-count-to={s.to} data-count-suffix={s.suffix}>{s.to.toLocaleString('en-IN')}{s.suffix}</span></strong>
+      <span class="label">{s.label}</span>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin: 0;
+    border-block: 1px solid var(--line-strong);
+  }
+  li {
+    display: grid;
+    gap: 0.4rem;
+    padding: clamp(1.4rem, 3vw, 2.4rem) clamp(0.8rem, 2vw, 1.6rem);
+  }
+  li + li {
+    border-left: 1px solid var(--line-strong);
+  }
+  .num {
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' 96;
+    font-weight: 700;
+    font-size: clamp(2.3rem, 1.3rem + 3.6vw, 4.4rem);
+    letter-spacing: -0.05em;
+    line-height: 1;
+    color: var(--forest);
+    font-variant-numeric: tabular-nums;
+  }
+  .label {
+    font-size: 0.85rem;
+    font-weight: 650;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  @media (max-width: 40rem) {
+    .stats {
+      grid-template-columns: 1fr 1fr;
+    }
+    li:nth-child(3) {
+      border-left: 0;
+    }
+    li:nth-child(n + 3) {
+      border-top: 1px solid var(--line-strong);
+    }
+  }
+</style>

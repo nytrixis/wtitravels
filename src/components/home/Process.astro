@@ -1,0 +1,64 @@
+---
+import { process } from '@/data/content';
+---
+
+<ol role="list" class="process">
+  {process.map((s, i) => (
+    <li class="process__step" data-reveal style={`--reveal-delay:${i * 90}ms`}>
+      <span class="process__num" aria-hidden="true">{s.step}</span>
+      <h3>{s.title}</h3>
+      <p>{s.body}</p>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .process {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+    margin: 0;
+    counter-reset: step;
+  }
+  .process__step {
+    position: relative;
+    display: grid;
+    gap: var(--space-3);
+    padding-top: var(--space-5);
+    border-top: 1px solid rgb(255 255 255 / 0.25);
+  }
+  .process__step::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 0;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--orange);
+  }
+  .process__num {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--step-5);
+    line-height: 1;
+    color: var(--orange);
+    font-variation-settings: 'opsz' 144;
+    font-weight: 400;
+  }
+  .process h3 {
+    font-size: var(--step-2);
+  }
+  .process p {
+    color: rgb(255 255 255 / 0.75);
+    max-width: 34ch;
+  }
+  @media (max-width: 48rem) {
+    .process {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+  }
+</style>

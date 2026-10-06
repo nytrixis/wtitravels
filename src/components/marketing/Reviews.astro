@@ -1,0 +1,57 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import { reviews } from '@/data/reviews';
+---
+
+{reviews.length > 0 && (
+  <ul role="list" class="reviews" data-location="reviews">
+    {reviews.map((r) => (
+      <li class="review" data-reveal>
+        <p class="review__stars" role="img" aria-label={`${r.rating} out of 5 stars`}>
+          {Array.from({ length: r.rating }).map(() => <Icon name="star" size={16} />)}
+        </p>
+        <blockquote>“{r.quote}”</blockquote>
+        <footer><strong>{r.name}</strong>, {r.country}<small>{r.tour}</small></footer>
+      </li>
+    ))}
+  </ul>
+)}
+
+<style>
+  .reviews {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: var(--space-5);
+    margin: 0;
+  }
+  .review {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    padding: var(--space-5);
+    background: var(--white);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-s);
+  }
+  .review__stars {
+    display: flex;
+    gap: 2px;
+    color: var(--orange);
+  }
+  .review__stars :global(svg) {
+    fill: currentColor;
+  }
+  blockquote {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    line-height: 1.45;
+  }
+  footer {
+    display: grid;
+    font-size: 0.9rem;
+    color: var(--ink-2);
+  }
+  footer small {
+    color: var(--ink-3);
+  }
+</style>

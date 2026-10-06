@@ -1,0 +1,214 @@
+---
+import { Image } from 'astro:assets';
+import Icon from '@/components/ui/Icon.astro';
+import { formatInr } from '@/lib/money';
+import { bucketOf, coverOf, routeOf, styleLabels, tourUrl, type Tour } from '@/lib/tours';
+
+interface Props {
+  tour: Tour;
+  /** Where on the site this card renders — feeds funnel analytics. */
+  list: string;
+  index?: number;
+  /** Filter hooks used by /tours/. */
+  filterable?: boolean;
+  priority?: boolean;
+}
+const { tour, list, index = 0, filterable = false, priority = false } = Astro.props;
+
+const style = tour.themes.find((t) => ['luxury', 'budget', 'group', 'short'].includes(t));
+const filterAttrs = filterable
+  ? {
+      'data-tour-card': '',
+      'data-region': tour.regions.join(' '),
+      'data-themes': tour.themes.join(' '),
+      'data-bucket': bucketOf(tour),
+      'data-days': String(tour.durationDays ?? 1),
+      'data-order': String(index),
+      'data-search': `${tour.title} ${routeOf(tour)} ${tour.summary}`.toLowerCase(),
+    }
+  : {};
+---
+
+<article
+  class="card"
+  data-cursor="View"
+  data-track-impression="view_item_list"
+  data-track-item-id={tour.slug}
+  data-track-item-name={tour.title}
+  data-track-list={list}
+  data-track-index={index}
+  {...filterAttrs}
+>
+  <div class="card__media">
+    <Image
+      src={coverOf(tour)}
+      alt={`${tour.title} — ${routeOf(tour)}`}
+      width={640}
+      height={720}
+      widths={[320, 480, 640, 800]}
+      sizes="(min-width: 64rem) 22rem, (min-width: 40rem) 45vw, 92vw"
+      loading={priority ? 'eager' : 'lazy'}
+      fetchpriority={priority ? 'high' : 'auto'}
+      decoding="async"
+    />
+    <span class="card__duration"><Icon name="clock" size={14} />{tour.durationLabel}</span>
+    {style && <span class="card__style">{styleLabels[style]}</span>}
+  </div>
+  <div class="card__body">
+    <p class="card__route">{routeOf(tour)}</p>
+    <h3 class="card__title">
+      <a
+        href={tourUrl(tour.slug)}
+        data-track="select_item"
+        data-track-item-id={tour.slug}
+        data-track-item-name={tour.title}
+        data-track-list={list}
+        data-track-index={index}>{tour.title}</a
+      >
+    </h3>
+    <p class="card__summary">{tour.summary}</p>
+    <div class="card__foot">
+      {tour.price ? (
+        <p class="card__price"><small>from</small> <strong>{formatInr(tour.price.from)}</strong></p>
+      ) : (
+        <p class="card__price card__price--quote">Custom quote</p>
+      )}
+      <span class="card__go" aria-hidden="true"><Icon name="arrow-right" size={18} /></span>
+    </div>
+  </div>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    background: var(--white);
+    border-radius: var(--radius-l);
+    overflow: hidden;
+    box-shadow: var(--shadow-s);
+    transition:
+      transform 0.35s var(--ease),
+      box-shadow 0.35s var(--ease);
+    height: 100%;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-m);
+  }
+  .card[hidden] {
+    display: none;
+  }
+  .card__media {
+    position: relative;
+    aspect-ratio: 4 / 4.2;
+    overflow: hidden;
+    border-radius: var(--arch);
+    margin: 0.55rem 0.55rem 0;
+  }
+  .card__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s var(--ease);
+  }
+  .card:hover .card__media :global(img) {
+    transform: scale(1.05);
+  }
+  .card__duration,
+  .card__style {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 650;
+    backdrop-filter: blur(8px);
+  }
+  .card__duration {
+    left: 0.9rem;
+    bottom: 0.9rem;
+    background: rgb(255 255 255 / 0.92);
+    color: var(--ink);
+  }
+  .card__style {
+    right: 0.9rem;
+    bottom: 0.9rem;
+    background: rgb(11 31 21 / 0.72);
+    color: var(--white);
+  }
+  .card__body {
+    display: grid;
+    gap: 0.5rem;
+    padding: 1.1rem 1.35rem 1.35rem;
+    align-content: start;
+    grid-template-rows: auto auto 1fr auto;
+  }
+  .card__route {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .card__title {
+    font-size: 1.35rem;
+    line-height: 1.2;
+  }
+  .card__title a {
+    text-decoration: none;
+  }
+  /* Stretched link: the whole card is clickable. */
+  .card__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .card__summary {
+    font-size: 0.92rem;
+    color: var(--ink-2);
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.8rem;
+    margin-top: 0.4rem;
+    border-top: 1px solid var(--line);
+  }
+  .card__price {
+    font-size: 0.9rem;
+    color: var(--ink-3);
+  }
+  .card__price strong {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .card__price--quote {
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+  .card__go {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--paper-2);
+    transition: all 0.25s var(--ease);
+  }
+  .card:hover .card__go {
+    background: var(--accent);
+    color: var(--white);
+  }
+</style>

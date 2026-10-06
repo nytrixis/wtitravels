@@ -1,0 +1,129 @@
+---
+import { Image, getImage } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import CtaBand from '@/components/marketing/CtaBand.astro';
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro';
+import { site } from '@/config/site';
+import { abs, articleSchema, breadcrumbSchema } from '@/lib/schema';
+import { collectionUrl } from '@/data/collections';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const path = `/blog/${post.id}/`;
+const og = await getImage({ src: post.data.cover, width: 1200, height: 630, format: 'jpg' });
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+const related = post.id.includes('rajasthan') ? 'rajasthan-tours' : 'golden-triangle-tours';
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  image={post.data.cover}
+  type="article"
+  published={post.data.pubDate}
+  schema={[
+    articleSchema({
+      title: post.data.title,
+      description: post.data.description,
+      url: abs(path),
+      image: abs(og.src),
+      published: post.data.pubDate,
+      updated: post.data.updatedDate,
+    }),
+    breadcrumbSchema([
+      { name: 'Home', href: '/' },
+      { name: 'Journal', href: '/blog/' },
+      { name: post.data.title, href: path },
+    ]),
+  ]}
+>
+  <article class="post">
+    <header class="container--narrow post__head">
+      <Breadcrumbs items={[{ name: 'Journal', href: '/blog/' }, { name: post.data.title }]} />
+      <p class="eyebrow">{post.data.category}</p>
+      <h1>{post.data.title}</h1>
+      <p class="post__meta">By {site.name} · <time datetime={post.data.pubDate.toISOString()}>{fmt(post.data.pubDate)}</time></p>
+    </header>
+    <div class="container post__cover">
+      <Image src={post.data.cover} alt={post.data.coverAlt} widths={[640, 960, 1280, 1600]} sizes="(min-width: 76rem) 76rem, 100vw" loading="eager" fetchpriority="high" />
+    </div>
+    <div class="container--narrow prose post__body" data-track-view="view_article" data-track-item-id={post.id}>
+      <Content />
+      <aside class="post__next">
+        <h2>Ready to go?</h2>
+        <p>We turn stories like this into tailor-made itineraries — with hotels, guides and a plan in 24 hours.</p>
+        <div class="post__actions">
+          <a class="btn" href="/plan-your-trip/" data-track="cta_click" data-track-location="blog_post" data-track-label="plan_my_trip">Plan my trip</a>
+          <a class="btn btn--ghost" href={collectionUrl(related)}>See related tours</a>
+        </div>
+      </aside>
+    </div>
+  </article>
+  <CtaBand source={`blog-${post.id}`} />
+</BaseLayout>
+
+<style>
+  .post__head {
+    display: grid;
+    gap: var(--space-4);
+    padding-block: var(--space-6) var(--space-5);
+  }
+  .post__head h1 {
+    font-size: var(--step-4);
+    max-width: 20ch;
+  }
+  .post__meta {
+    color: var(--ink-3);
+    font-size: 0.9rem;
+  }
+  .post__cover {
+    margin-bottom: var(--space-7);
+  }
+  .post__cover :global(img) {
+    width: 100%;
+    max-height: 34rem;
+    object-fit: cover;
+    border-radius: var(--radius-l);
+  }
+  .post__body {
+    padding-bottom: var(--space-8);
+    font-size: var(--step-1);
+    line-height: 1.75;
+  }
+  .post__body :global(img) {
+    border-radius: var(--radius-m);
+    margin-block: var(--space-5);
+    width: 100%;
+  }
+  .post__body :global(p:first-of-type) {
+    font-size: var(--step-2);
+    line-height: 1.5;
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' 36;
+  }
+  .post__next {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-7);
+    padding: var(--space-6);
+    background: var(--paper-2);
+    border-radius: var(--radius-l);
+    font-size: 1rem;
+  }
+  .post__next h2 {
+    font-size: var(--step-3);
+    margin: 0;
+  }
+  .post__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

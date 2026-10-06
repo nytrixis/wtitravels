@@ -1,0 +1,109 @@
+---
+import EnquiryForm from '@/components/forms/EnquiryForm.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { formatInr } from '@/lib/money';
+import { site, whatsappLink } from '@/config/site';
+import type { Tour } from '@/lib/tours';
+
+interface Props {
+  tour: Tour;
+}
+const { tour } = Astro.props;
+---
+
+<aside class="enq" id="enquire" aria-labelledby="enq-title" data-location="tour_sidebar">
+  <div class="enq__head">
+    {tour.price ? (
+      <p class="enq__price"><small>from</small> <strong>{formatInr(tour.price.from)}</strong>{tour.price.was && <s>{formatInr(tour.price.was)}</s>} <small>{tour.price.unit}</small></p>
+    ) : (
+      <p class="enq__price enq__price--quote">Tailor-made quote</p>
+    )}
+    <h2 id="enq-title">Get a free quote for this tour</h2>
+    <p class="enq__sub"><Icon name="clock" size={16} /> Reply within {site.claims.proposalHours} hours</p>
+  </div>
+  <EnquiryForm source="tour-page" tourSlug={tour.slug} variant="compact" submitLabel="Request my quote" idPrefix="tour" />
+  <div class="enq__direct">
+    <a href={site.contact.phoneHref} class="enq__link" data-track-location="tour_sidebar"><Icon name="phone" size={18} /> {site.contact.phone}</a>
+    {site.contact.whatsapp && (
+      <a href={whatsappLink(`Hi! I'm interested in "${tour.title}".`)} class="enq__link enq__link--wa" target="_blank" rel="noopener" data-track-location="tour_sidebar">
+        <Icon name="whatsapp" size={18} /> WhatsApp
+      </a>
+    )}
+  </div>
+</aside>
+
+<style>
+  .enq {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    background: var(--white);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-m);
+    border: 1px solid var(--line);
+  }
+  .enq__head {
+    display: grid;
+    gap: 0.4rem;
+  }
+  .enq__price {
+    font-size: 0.9rem;
+    color: var(--ink-3);
+  }
+  .enq__price strong {
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    color: var(--ink);
+    font-weight: 600;
+    line-height: 1;
+  }
+  .enq__price s {
+    margin-inline: 0.3rem;
+  }
+  .enq__price--quote {
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    color: var(--accent);
+  }
+  .enq h2 {
+    font-size: var(--step-2);
+    line-height: 1.15;
+  }
+  .enq__sub {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--green);
+    font-weight: 600;
+  }
+  .enq__direct {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--line);
+  }
+  .enq__link {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .enq__link:hover {
+    border-color: var(--ink);
+  }
+  .enq__link--wa {
+    color: var(--whatsapp);
+    border-color: color-mix(in srgb, var(--whatsapp) 40%, transparent);
+  }
+</style>

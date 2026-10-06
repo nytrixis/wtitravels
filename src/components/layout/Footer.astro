@@ -1,0 +1,236 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import Logo from '@/components/ui/Logo.astro';
+import TrustBadges from '@/components/ui/TrustBadges.astro';
+import { site, telHref, whatsappLink } from '@/config/site';
+import { destinations, destinationUrl } from '@/data/destinations';
+import { collectionUrl, packageCollections, styleCollections } from '@/data/collections';
+import { taxiPages, taxiUrl } from '@/data/taxi';
+
+const year = new Date().getFullYear();
+const socials = [
+  { key: 'facebook', label: 'Facebook', icon: 'facebook', href: site.social.facebook },
+  { key: 'instagram', label: 'Instagram', icon: 'instagram', href: site.social.instagram },
+  { key: 'twitter', label: 'X (Twitter)', icon: 'x-social', href: site.social.twitter },
+] as const;
+const activeSocials = socials.filter((s) => s.href);
+---
+
+<footer class="footer" data-location="footer">
+  <div class="container footer__grid">
+    <div class="footer__brand">
+      <a href="/" aria-label={`${site.name} — home`}><Logo tone="light" /></a>
+      <p>{site.description}</p>
+      <ul role="list" class="footer__contact">
+        <li><Icon name="phone" size={18} /><a href={site.contact.phoneHref}>{site.contact.phone}</a></li>
+        {site.contact.phoneAlt && (
+          <li><Icon name="phone" size={18} /><a href={telHref(site.contact.phoneAlt)}>{site.contact.phoneAlt}</a></li>
+        )}
+        {site.contact.whatsapp && (
+          <li><Icon name="whatsapp" size={18} /><a href={whatsappLink('Hi! I would like to plan a trip.')} target="_blank" rel="noopener">Chat on WhatsApp</a></li>
+        )}
+        {site.contact.person && (
+          <li><Icon name="users" size={18} /><span>{site.contact.person} · <a href={telHref(site.contact.personPhone)}>{site.contact.personPhone}</a></span></li>
+        )}
+        <li><Icon name="mail" size={18} /><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></li>
+        {site.contact.emailAlt && (
+          <li><Icon name="mail" size={18} /><a href={`mailto:${site.contact.emailAlt}`}>{site.contact.emailAlt}</a></li>
+        )}
+        <li><Icon name="map-pin" size={18} /><span>{site.contact.address}</span></li>
+      </ul>
+      {activeSocials.length > 0 && (
+        <ul role="list" class="footer__social">
+          {activeSocials.map((s) => (
+            <li>
+              <a href={s.href} target="_blank" rel="noopener noreferrer me" aria-label={s.label}>
+                <Icon name={s.icon} size={20} />
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+
+    <nav class="footer__col" aria-label="Destinations">
+      <h2>Destinations</h2>
+      <ul role="list">
+        {destinations.map((d) => <li><a href={destinationUrl(d.slug)}>{d.name}</a></li>)}
+      </ul>
+      <h2 class="footer__sub">Hire a taxi</h2>
+      <ul role="list">
+        {taxiPages.map((t) => <li><a href={taxiUrl(t.slug)}>{t.name} by car</a></li>)}
+      </ul>
+    </nav>
+
+    <nav class="footer__col" aria-label="Tours">
+      <h2>Tours</h2>
+      <ul role="list">
+        {styleCollections.map((c) => <li><a href={collectionUrl(c.slug)}>{c.label} tours</a></li>)}
+        <li><a href="/tours/">All tours</a></li>
+      </ul>
+    </nav>
+
+    <nav class="footer__col" aria-label="Holiday packages">
+      <h2>Holiday packages</h2>
+      <ul role="list">
+        {packageCollections.slice(0, 8).map((c) => <li><a href={collectionUrl(c.slug)}>{c.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <nav class="footer__col" aria-label="Company">
+      <h2>Company</h2>
+      <ul role="list">
+        <li><a href="/about/">About us</a></li>
+        <li><a href="/blog/">Journal</a></li>
+        <li><a href="/contact/">Contact</a></li>
+        <li><a href="/plan-your-trip/">Plan my trip</a></li>
+        <li><a href="/terms-conditions/">Terms &amp; Conditions</a></li>
+        <li><a href="/privacy-policy/">Privacy Policy</a></li>
+        <li><button type="button" class="footer__linkbtn" data-open-consent>Cookie settings</button></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="container footer__badges">
+    <p>Recognised &amp; trusted</p>
+    <TrustBadges variant="full" />
+  </div>
+
+  <div class="footer__legal container">
+    <p>© {year} {site.name}. All rights reserved.</p>
+    <p>Itineraries are samples and can be tailored to you.</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--forest);
+    color: rgb(255 255 255 / 0.78);
+    padding-top: var(--space-8);
+    font-size: 0.95rem;
+  }
+  .footer__grid {
+    display: grid;
+    grid-template-columns: 1.6fr repeat(4, 1fr);
+    gap: var(--space-6) var(--space-5);
+  }
+  .footer__brand {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+    max-width: 24rem;
+  }
+  .footer__brand p {
+    line-height: 1.6;
+  }
+  .footer__contact {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+  }
+  .footer__contact li {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+  }
+  .footer__contact :global(svg) {
+    flex: none;
+    margin-top: 0.2rem;
+    color: var(--orange);
+  }
+  .footer a {
+    text-decoration: none;
+  }
+  .footer a:hover {
+    color: var(--white);
+    text-decoration: underline;
+  }
+  .footer__col h2 {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: var(--space-4);
+  }
+  .footer__sub {
+    margin-top: var(--space-6);
+  }
+  .footer__col ul {
+    display: grid;
+    gap: 0.55rem;
+    margin: 0;
+  }
+  .footer__linkbtn {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    cursor: pointer;
+  }
+  .footer__linkbtn:hover {
+    color: var(--white);
+    text-decoration: underline;
+  }
+  .footer__social {
+    display: flex;
+    gap: 0.6rem;
+    margin: 0;
+  }
+  .footer__social a {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid rgb(255 255 255 / 0.25);
+    border-radius: 50%;
+  }
+  .footer__social a:hover {
+    background: var(--orange);
+    color: var(--ink);
+    border-color: var(--orange);
+  }
+  .footer__badges {
+    display: grid;
+    gap: var(--space-4);
+    margin-top: var(--space-7);
+    padding-top: var(--space-6);
+    border-top: 1px solid rgb(255 255 255 / 0.14);
+  }
+  .footer__badges > p {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--orange);
+  }
+  .footer__badges :global(.badge__cap) {
+    color: rgb(255 255 255 / 0.78);
+  }
+  .footer__legal {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+    padding-block: var(--space-5);
+    border-top: 1px solid rgb(255 255 255 / 0.14);
+    font-size: 0.85rem;
+    color: rgb(255 255 255 / 0.6);
+  }
+  @media (max-width: 64rem) {
+    .footer__grid {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    .footer__brand {
+      grid-column: 1 / -1;
+      max-width: none;
+    }
+  }
+  @media (max-width: 40rem) {
+    .footer__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,305 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import { durationBuckets, regionLabels, styleLabels, type RegionId } from '@/lib/tours';
+
+interface Props {
+  total: number;
+  /** Themes present in the data, in display order. */
+  styles: string[];
+}
+const { total, styles } = Astro.props;
+const regions = Object.entries(regionLabels) as [RegionId, string][];
+---
+
+<section class="filters" aria-label="Filter tours" data-filters data-total={total}>
+  <div class="filters__top">
+    <label class="search">
+      <Icon name="search" size={20} />
+      <span class="sr-only">Search tours</span>
+      <input type="search" name="q" placeholder="Search tours, cities, themes…" autocomplete="off" data-filter-search />
+    </label>
+    <label class="sort">
+      <span class="sr-only">Sort tours</span>
+      <select data-filter-sort>
+        <option value="recommended">Recommended</option>
+        <option value="shortest">Shortest first</option>
+        <option value="longest">Longest first</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="filters__rows">
+    <div class="group" role="radiogroup" aria-label="Destination">
+      <span class="group__label">Where</span>
+      <div class="group__chips">
+        <button type="button" class="pill is-on" role="radio" aria-checked="true" data-group="region" data-value="">All</button>
+        {regions.map(([id, label]) => <button type="button" class="pill" role="radio" aria-checked="false" data-group="region" data-value={id}>{label}</button>)}
+      </div>
+    </div>
+    <div class="group" role="radiogroup" aria-label="Duration">
+      <span class="group__label">How long</span>
+      <div class="group__chips">
+        <button type="button" class="pill is-on" role="radio" aria-checked="true" data-group="days" data-value="">Any</button>
+        {durationBuckets.map((b) => <button type="button" class="pill" role="radio" aria-checked="false" data-group="days" data-value={b.id}>{b.label}</button>)}
+      </div>
+    </div>
+    <div class="group" role="radiogroup" aria-label="Style or interest">
+      <span class="group__label">Style</span>
+      <div class="group__chips">
+        <button type="button" class="pill is-on" role="radio" aria-checked="true" data-group="style" data-value="">All</button>
+        {styles.map((s) => <button type="button" class="pill" role="radio" aria-checked="false" data-group="style" data-value={s}>{styleLabels[s] ?? s}</button>)}
+      </div>
+    </div>
+  </div>
+
+  <div class="filters__status">
+    <p aria-live="polite" data-filter-count>Showing {total} of {total} tours</p>
+    <button type="button" class="reset" data-filter-reset hidden>Clear filters</button>
+  </div>
+</section>
+
+<style>
+  .filters {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    margin-bottom: var(--space-6);
+    background: var(--white);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-s);
+  }
+  .filters__top {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-3);
+  }
+  .search {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .search :global(svg) {
+    position: absolute;
+    left: 1rem;
+    color: var(--ink-3);
+    pointer-events: none;
+  }
+  .search input {
+    width: 100%;
+    min-height: 3.25rem;
+    padding: 0.6rem 1rem 0.6rem 3rem;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 999px;
+    background: var(--paper);
+  }
+  .search input:focus,
+  .sort select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgb(200 71 15 / 0.16);
+  }
+  .sort select {
+    min-height: 3.25rem;
+    padding: 0 2.5rem 0 1.1rem;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 999px;
+    background-color: var(--paper);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2315172a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    appearance: none;
+    font-weight: 600;
+  }
+  .filters__rows {
+    display: grid;
+    gap: var(--space-3);
+  }
+  .group {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .group__label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .group__chips {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .pill {
+    min-height: 2.5rem;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--line-strong);
+    background: transparent;
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.15s var(--ease);
+  }
+  .pill:hover {
+    border-color: var(--ink);
+  }
+  .pill.is-on {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--white);
+  }
+  .filters__status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.92rem;
+    color: var(--ink-2);
+  }
+  .reset {
+    border: 0;
+    background: none;
+    font-weight: 650;
+    color: var(--accent-deep);
+    text-decoration: underline;
+    padding: 0.5rem;
+  }
+  .reset[hidden] {
+    display: none;
+  }
+  @media (max-width: 48rem) {
+    .filters {
+      padding: var(--space-4);
+    }
+    .filters__top {
+      grid-template-columns: 1fr;
+    }
+    .group {
+      grid-template-columns: 1fr;
+      gap: 0.4rem;
+    }
+    .group__chips {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      margin-inline: calc(var(--space-4) * -1);
+      padding-inline: var(--space-4);
+      scrollbar-width: none;
+    }
+    .group__chips::-webkit-scrollbar {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { track } from '@/scripts/telemetry';
+
+  const root = document.querySelector<HTMLElement>('[data-filters]');
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-tour-card]')];
+  const list = cards[0]?.closest('ul');
+  const empty = document.querySelector<HTMLElement>('[data-filter-empty]');
+
+  if (root && list) {
+    const state = { q: '', region: '', days: '', style: '', sort: 'recommended' };
+    const total = Number(root.dataset.total ?? cards.length);
+    const searchEl = root.querySelector<HTMLInputElement>('[data-filter-search]')!;
+    const sortEl = root.querySelector<HTMLSelectElement>('[data-filter-sort]')!;
+    const countEl = root.querySelector<HTMLElement>('[data-filter-count]')!;
+    const resetEl = root.querySelector<HTMLElement>('[data-filter-reset]')!;
+    const li = (c: HTMLElement) => c.closest('li') as HTMLElement;
+
+    const matches = (c: HTMLElement): boolean => {
+      const d = c.dataset;
+      if (state.region && !(d.region ?? '').split(' ').includes(state.region)) return false;
+      if (state.days && d.bucket !== state.days) return false;
+      if (state.style && !(d.themes ?? '').split(' ').includes(state.style)) return false;
+      if (state.q) return state.q.split(/\s+/).every((w) => (d.search ?? '').includes(w));
+      return true;
+    };
+
+    const syncPills = () => {
+      root.querySelectorAll<HTMLElement>('.pill').forEach((p) => {
+        const on = state[p.dataset.group as 'region' | 'days' | 'style'] === p.dataset.value;
+        p.classList.toggle('is-on', on);
+        p.setAttribute('aria-checked', String(on));
+      });
+    };
+
+    const writeUrl = () => {
+      const params = new URLSearchParams();
+      (['q', 'region', 'days', 'style'] as const).forEach((k) => state[k] && params.set(k, state[k]));
+      if (state.sort !== 'recommended') params.set('sort', state.sort);
+      const qs = params.toString();
+      history.replaceState(null, '', qs ? `?${qs}` : location.pathname);
+    };
+
+    const render = () => {
+      const sorted = [...cards].sort((a, b) => {
+        const da = Number(a.dataset.days), db = Number(b.dataset.days);
+        if (state.sort === 'shortest') return da - db || Number(a.dataset.order) - Number(b.dataset.order);
+        if (state.sort === 'longest') return db - da || Number(a.dataset.order) - Number(b.dataset.order);
+        return Number(a.dataset.order) - Number(b.dataset.order);
+      });
+      let shown = 0;
+      sorted.forEach((c) => {
+        const ok = matches(c);
+        li(c).hidden = !ok;
+        if (ok) shown++;
+        list.appendChild(li(c));
+      });
+      countEl.textContent = `Showing ${shown} of ${total} tours`;
+      const active = Boolean(state.q || state.region || state.days || state.style);
+      resetEl.hidden = !active;
+      if (empty) empty.hidden = shown > 0;
+      syncPills();
+      writeUrl();
+      return shown;
+    };
+
+    // Initial state from URL (hero search, deep links, shared filters)
+    const params = new URLSearchParams(location.search);
+    state.q = (params.get('q') ?? '').toLowerCase().trim();
+    state.region = params.get('region') ?? '';
+    state.days = params.get('days') ?? '';
+    state.style = params.get('style') ?? '';
+    state.sort = params.get('sort') ?? 'recommended';
+    searchEl.value = params.get('q') ?? '';
+    sortEl.value = state.sort;
+    render();
+
+    root.addEventListener('click', (e) => {
+      const pill = (e.target as HTMLElement).closest<HTMLElement>('.pill');
+      if (!pill) return;
+      const group = pill.dataset.group as 'region' | 'days' | 'style';
+      state[group] = pill.dataset.value ?? '';
+      const shown = render();
+      track('filter_apply', { group, value: state[group] || 'all', results: shown });
+    });
+
+    let timer = 0;
+    searchEl.addEventListener('input', () => {
+      state.q = searchEl.value.toLowerCase().trim();
+      const shown = render();
+      clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        if (state.q.length > 1) track(shown ? 'search' : 'search_no_results', { term: state.q, results: shown, location: 'tours_page' });
+      }, 700);
+    });
+    sortEl.addEventListener('change', () => {
+      state.sort = sortEl.value;
+      render();
+      track('filter_apply', { group: 'sort', value: state.sort });
+    });
+    const reset = () => {
+      Object.assign(state, { q: '', region: '', days: '', style: '', sort: 'recommended' });
+      searchEl.value = '';
+      sortEl.value = 'recommended';
+      render();
+      track('filter_reset');
+    };
+    resetEl.addEventListener('click', reset);
+    document.querySelector('[data-filter-empty-reset]')?.addEventListener('click', reset);
+  }
+</script>
