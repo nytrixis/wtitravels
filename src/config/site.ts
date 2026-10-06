@@ -1,18 +1,8 @@
 /**
  * Single source of truth for brand, contact and integration settings.
- * Everything that must change before launch is driven by environment
- * variables (see .env.example) — never edit components for these.
+ * Everything is plain constants — edit here, rebuild, done. No environment variables.
  */
-const env = import.meta.env;
-
-const str = (value: unknown, fallback = ''): string =>
-  typeof value === 'string' && value.trim() ? value.trim() : fallback;
-
 const digits = (value: string): string => value.replace(/\D/g, '');
-
-const phone = str(env.PUBLIC_PHONE, '+91 87663 73398');
-const email = str(env.PUBLIC_EMAIL, 'sales@wtitravels.com');
-const whatsapp = digits(str(env.PUBLIC_WHATSAPP, '918766373398'));
 
 /** tel: link for Indian numbers written with or without the +91 / leading 0. */
 export const telHref = (number: string): string => {
@@ -21,13 +11,16 @@ export const telHref = (number: string): string => {
   return `tel:+91${d.replace(/^0/, '')}`;
 };
 
+const phone = '+91 87663 73398';
+
 export const site = {
   name: 'WTI Tours & Travels',
   shortName: 'WTI Travels',
   tagline: 'Tailor-made journeys across India & the Himalaya',
   description:
     'Private and group tours across India, Nepal, Bhutan and Sri Lanka — tailor-made itineraries, hand-picked hotels and a friendly tour manager on call 24x7. Get your proposal within 24 hours.',
-  url: str(env.PUBLIC_SITE_URL, 'https://www.wtitravels.com').replace(/\/$/, ''),
+  /** Live domain — used for canonicals, sitemap, social cards. */
+  url: 'https://www.wtitravels.com',
   locale: 'en',
   /** Used for Organization/LocalBusiness schema. */
   foundingLocation: 'New Delhi, India',
@@ -35,42 +28,53 @@ export const site = {
   contact: {
     phone,
     phoneHref: telHref(phone),
-    phoneAlt: str(env.PUBLIC_PHONE_ALT, '011-4505 4254'),
-    person: str(env.PUBLIC_CONTACT_PERSON, 'RP Mishra'),
-    personPhone: str(env.PUBLIC_CONTACT_PERSON_PHONE, '+91 95403 51000'),
-    email,
-    emailAlt: str(env.PUBLIC_EMAIL_ALT),
-    whatsapp,
-    address: str(env.PUBLIC_ADDRESS, 'L-317/73, Mahipalpur, NH-8, New Delhi – 110037'),
+    phoneAlt: '011-4505 4254',
+    person: 'RP Mishra',
+    personPhone: '+91 95403 51000',
+    email: 'sales@wtitravels.com',
+    emailAlt: '',
+    /** International format, digits only. */
+    whatsapp: '918766373398',
+    address: 'L-317/73, Mahipalpur, NH-8, New Delhi – 110037',
     hours: 'Mon–Sat, 9:00–19:00 IST · Tour managers on call 24x7',
   },
 
   /** Leave a URL empty to hide the icon. */
   social: {
-    facebook: str(env.PUBLIC_SOCIAL_FACEBOOK),
-    instagram: str(env.PUBLIC_SOCIAL_INSTAGRAM),
-    twitter: str(env.PUBLIC_SOCIAL_TWITTER),
-    tripadvisor: str(env.PUBLIC_SOCIAL_TRIPADVISOR),
+    facebook: '',
+    instagram: '',
+    twitter: '',
+    tripadvisor: '',
   },
 
+  /**
+   * Lead delivery. Any JSON-accepting endpoint works — Web3Forms
+   * ("https://api.web3forms.com/submit" + accessKey) or Formspree ("https://formspree.io/f/xxxx").
+   * While empty, a submit hands the lead to WhatsApp so it isn't lost.
+   */
   forms: {
-    endpoint: str(env.PUBLIC_FORM_ENDPOINT),
-    accessKey: str(env.PUBLIC_FORM_ACCESS_KEY),
+    endpoint: '',
+    accessKey: '',
   },
 
+  /** Third-party tags — each loads only after cookie consent. Empty = off. */
   tracking: {
-    ga4: str(env.PUBLIC_GA4_ID),
-    gtm: str(env.PUBLIC_GTM_ID),
-    metaPixel: str(env.PUBLIC_META_PIXEL_ID),
-    clarity: str(env.PUBLIC_CLARITY_ID),
-    googleAds: str(env.PUBLIC_GADS_ID),
-    googleAdsLeadLabel: str(env.PUBLIC_GADS_LEAD_LABEL),
-    endpoint: str(env.PUBLIC_TELEMETRY_ENDPOINT),
+    ga4: '',
+    gtm: '',
+    metaPixel: '',
+    clarity: '',
+    googleAds: '',
+    googleAdsLeadLabel: '',
+    /** Optional first-party event sink (receives sendBeacon JSON). */
+    endpoint: '',
   },
+
+  /** 'auto' = opt-in for Europe/UK timezones, notice + opt-out elsewhere; 'strict' = opt-in everywhere. */
+  consentMode: 'auto' as 'auto' | 'strict',
 
   verification: {
-    google: str(env.PUBLIC_GSC_VERIFICATION),
-    bing: str(env.PUBLIC_BING_VERIFICATION),
+    google: '',
+    bing: '',
   },
 
   /**
@@ -89,6 +93,3 @@ export type Site = typeof site;
 
 export const whatsappLink = (message = ''): string =>
   `https://wa.me/${site.contact.whatsapp}${message ? `?text=${encodeURIComponent(message)}` : ''}`;
-
-/** True while any launch-critical value is still a placeholder. */
-export const hasPlaceholderContact = site.contact.phone.includes('00000') || site.contact.email.includes('your-domain');

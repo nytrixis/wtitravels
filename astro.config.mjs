@@ -2,7 +2,7 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-const site = process.env.PUBLIC_SITE_URL ?? 'https://www.wtitravels.com';
+const site = 'https://www.wtitravels.com'; // keep in sync with src/config/site.ts
 
 export default defineConfig({
   site,

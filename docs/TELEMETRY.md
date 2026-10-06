@@ -2,12 +2,12 @@
 
 One function — `track(event, params)` in `src/scripts/telemetry/track.ts` — fans out to every configured sink:
 `dataLayer` (GTM), GA4 (`gtag`), Meta Pixel (mapped to standard events), Microsoft Clarity, and an optional
-first-party endpoint (`PUBLIC_TELEMETRY_ENDPOINT`, `sendBeacon` JSON). Sinks that aren't loaded are silent no-ops.
+first-party endpoint (`tracking.endpoint` in `src/config/site.ts`, `sendBeacon` JSON). Sinks that aren't loaded are silent no-ops.
 
 ## Consent
 
-Third-party tags load **only after consent**. `PUBLIC_CONSENT_MODE=auto` (default): opt-in for Europe/UK timezones,
-notice-with-opt-out elsewhere; `strict`: opt-in everywhere. Choice stored in `localStorage` (`wti_consent_v1`);
+Third-party tags load **only after consent**. `consentMode: 'auto'` (default, in `site.ts`): opt-in for Europe/UK timezones,
+notice-with-opt-out elsewhere; `'strict'`: opt-in everywhere. Choice stored in `localStorage` (`wti_consent_v1`);
 "Cookie settings" in the footer reopens the banner. Google Consent Mode v2 signals are kept in sync.
 *(Have counsel confirm this setup fits the markets you advertise in.)*
 
@@ -47,12 +47,12 @@ Add attributes — no JS needed:
 
 ## Wiring the ad platforms
 
-- **GA4:** set `PUBLIC_GA4_ID`. In GA4 → Admin → Events, mark `generate_lead` (primary), `click_call`, `click_whatsapp` as **key events**.
+- **GA4:** set `tracking.ga4`. In GA4 → Admin → Events, mark `generate_lead` (primary), `click_call`, `click_whatsapp` as **key events**.
   Build a funnel exploration: `view_tour` → `form_start` → `form_submit` → `generate_lead`.
-- **Google Ads:** set `PUBLIC_GADS_ID` (`AW-…`) and `PUBLIC_GADS_LEAD_LABEL`; the thank-you page sends the conversion with `transaction_id = lead_id` (deduplicated).
+- **Google Ads:** set `tracking.googleAds` (`AW-…`) and `tracking.googleAdsLeadLabel`; the thank-you page sends the conversion with `transaction_id = lead_id` (deduplicated).
   Import `click_call` / `click_whatsapp` from GA4 as secondary conversions.
-- **Meta:** set `PUBLIC_META_PIXEL_ID`; `generate_lead` → `Lead`, `view_tour` → `ViewContent`, calls/WhatsApp → `Contact`.
-- **Clarity:** set `PUBLIC_CLARITY_ID` for heatmaps and session recordings.
+- **Meta:** set `tracking.metaPixel`; `generate_lead` → `Lead`, `view_tour` → `ViewContent`, calls/WhatsApp → `Contact`.
+- **Clarity:** set `tracking.clarity` for heatmaps and session recordings.
 - `value: 4000` (₹) on `generate_lead` is a nominal lead value (see `src/scripts/thank-you.ts`) — tune it to your real close rate × margin.
 
 ## Attribution

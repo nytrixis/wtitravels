@@ -151,7 +151,7 @@ async function handleSubmit(form: HTMLFormElement, event: SubmitEvent): Promise<
   if (!hasEndpoint()) {
     rememberLead(record);
     const wa = getConfig().whatsapp;
-    openExternal(wa && !wa.includes('00000') ? whatsappUrl(record) : mailtoUrl(record));
+    openExternal(wa ? whatsappUrl(record) : mailtoUrl(record));
     location.href = `${THANK_YOU}?via=handoff`;
     return;
   }

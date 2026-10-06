@@ -5,7 +5,6 @@ and page from the original site is carried over; the design, motion, lead funnel
 
 ```bash
 npm install
-cp .env.example .env     # then fill in real values (see "Launch checklist")
 npm run dev              # http://localhost:4321
 npm run build            # type-check + static build → dist/
 npm run preview          # serve dist/ locally
@@ -15,19 +14,20 @@ Node ≥ 20.3. Everything below is plain Astro + TypeScript — no UI framework,
 
 ## Launch checklist
 
-`npm run check:launch` prints exactly what is still missing (it exits non-zero while anything blocking remains).
+Everything configurable lives as plain constants in **`src/config/site.ts`** — no `.env`, no host settings.
+`npm run check:launch` prints what is still open (exits non-zero while anything blocking remains).
 
-1. **Domain** → `PUBLIC_SITE_URL` (canonicals, sitemap, OG tags, robots).
-2. **Contact details** — already set as defaults in `src/config/site.ts` (mobile 87663 73398, landline 011-4505 4254, contact person RP Mishra 95403 51000, sales@wtitravels.com, Mahipalpur address). Override any of them with `PUBLIC_*` variables; add social URLs the same way. The WhatsApp number is the mobile (`PUBLIC_WHATSAPP`).
-3. **Lead endpoint** → `PUBLIC_FORM_ENDPOINT` (+ `PUBLIC_FORM_ACCESS_KEY`). Leads are POSTed as JSON — Web3Forms
+1. **Contact details** — already in `site.ts` (mobile 87663 73398, landline 011-4505 4254, contact person RP Mishra 95403 51000, sales@wtitravels.com, Mahipalpur address, WhatsApp = the mobile).
+2. **Lead endpoint** → `forms.endpoint` (+ `forms.accessKey`). Leads are POSTed as JSON — Web3Forms
    (`https://api.web3forms.com/submit`) or Formspree (`https://formspree.io/f/xxxx`) both work in minutes and email you each lead.
-   *Until this is set, a submit hands the lead to WhatsApp/email so nothing is lost, but it relies on the visitor pressing send.*
+   *Until this is set, a submit hands the lead to WhatsApp so nothing is lost, but it relies on the visitor pressing send.*
+3. **Domain** → `url` in `site.ts` and the matching line in `astro.config.mjs` (canonicals, sitemap, OG tags, robots).
 4. **Logo** → the WTI mark (orange W · green T · white I) is a vector rebuild from the brand description. Swap in the original artwork via `src/components/ui/Logo.astro`, `public/favicon.svg`, `public/logo.svg`, `public/apple-touch-icon.png`.
-5. **Telemetry IDs** → `PUBLIC_GA4_ID` (or `PUBLIC_GTM_ID`), `PUBLIC_META_PIXEL_ID`, `PUBLIC_CLARITY_ID`, `PUBLIC_GADS_ID` + `PUBLIC_GADS_LEAD_LABEL`. See [docs/TELEMETRY.md](docs/TELEMETRY.md).
-6. **Confirm the marketing claims** in `src/config/site.ts` (`claims`: "15,000+ happy travelers", 24-hour proposal, 3★–5★ hotels, 24x7 support). They were carried over from the original copy and must be true for WTI.
+5. **Telemetry IDs** → `tracking.ga4` (or `gtm`), `metaPixel`, `clarity`, `googleAds` + `googleAdsLeadLabel`. See [docs/TELEMETRY.md](docs/TELEMETRY.md).
+6. **Confirm the marketing claims** in `site.ts` (`claims`: "15,000+ happy travelers", 24-hour proposal, 3★–5★ hotels, 24x7 support) and the working hours. They were carried over / assumed and must be true for WTI.
 7. **Review legal text** — `src/content/legal/*.md` is the original Terms & Privacy with the brand swapped. Have it reviewed for WTI.
 8. **Image licences** — `docs/IMAGE-CREDITS.json` (hero photography; verify the CC0 items on their source pages). Tour photos are the originals from the previous site.
-9. **Search Console** → verify (`PUBLIC_GSC_VERIFICATION`), submit `/sitemap-index.xml`. Add the Google Business Profile.
+9. **Search Console** → `verification.google`, submit `/sitemap-index.xml`. Add the Google Business Profile.
 10. `npm run build && npm run audit:seo` — then deploy.
 
 ## Design & motion
@@ -105,7 +105,7 @@ npm run check           # astro check (types)
 
 Any static host. Build command `npm run build`, output `dist/`. `public/_headers` (security headers + immutable
 caching for `/_astro/*`) works on Cloudflare Pages and Netlify; mirror it in `vercel.json` for Vercel.
-Set the same `PUBLIC_*` variables in the host's environment settings.
+No environment variables are needed.
 
 ## Decisions & known limits
 

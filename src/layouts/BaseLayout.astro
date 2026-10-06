@@ -8,7 +8,7 @@ import Header from '@/components/layout/Header.astro';
 import MobileBar from '@/components/layout/MobileBar.astro';
 import LeadPopup from '@/components/marketing/LeadPopup.astro';
 import SEO from '@/components/seo/SEO.astro';
-import { hasPlaceholderContact, site } from '@/config/site';
+import { site } from '@/config/site';
 import { organizationSchema, websiteSchema } from '@/lib/schema';
 import '@/styles/global.css';
 import displayLatin from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2?url';
@@ -44,7 +44,7 @@ const clientConfig = {
   email: site.contact.email,
   formEndpoint: site.forms.endpoint,
   formAccessKey: site.forms.accessKey,
-  consentMode: import.meta.env.PUBLIC_CONSENT_MODE === 'strict' ? 'strict' : 'auto',
+  consentMode: site.consentMode,
   tracking: site.tracking,
 };
 ---
@@ -68,11 +68,6 @@ const clientConfig = {
     <script is:inline type="application/json" id="wti-config" set:html={JSON.stringify(clientConfig)} />
   </head>
   <body>
-    {import.meta.env.DEV && hasPlaceholderContact && (
-      <p style="position:fixed;z-index:999;left:0;right:0;bottom:0;margin:0;padding:.4rem 1rem;background:#fff3cd;color:#664d03;font:600 12px/1.4 system-ui;text-align:center">
-        Dev only: placeholder contact details in use — set PUBLIC_PHONE / PUBLIC_EMAIL / PUBLIC_WHATSAPP in .env
-      </p>
-    )}
     <a class="skip-link" href="#main">Skip to content</a>
     <Header variant={headerVariant} minimal={minimalHeader} />
     <main id="main">
